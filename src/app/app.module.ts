@@ -26,7 +26,8 @@ import {DropdownModule} from 'primeng/dropdown';
 import { MsgsComponent } from './msgs/msgs.component';
 import { CommonDataComponent } from './common-data/common-data.component'; 
 import { ProjectsComponent } from './projects/projects.component';
-import { DevelopersComponent } from './developers/developers.component'; 
+import { DevelopersComponent } from './developers/developers.component';
+import { TasksComponent } from './tasks/tasks.component'; 
  
 
 @NgModule({
@@ -35,7 +36,8 @@ import { DevelopersComponent } from './developers/developers.component';
     ProjectsComponent,
     MsgsComponent,
     CommonDataComponent,
-    DevelopersComponent
+    DevelopersComponent,
+    TasksComponent
   ],
   imports: [
     BrowserModule,
