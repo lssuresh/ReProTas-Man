@@ -1,0 +1,139 @@
+<p-table [columns]="columnsToDisplay" [value]="projects" selectionMode="single" [(selection)]="selectedProject"
+    [paginator]="true" [rows]="15" [resizableColumns]="true">
+    <ng-template pTemplate="caption">
+        Projects
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
+                {{col.header}}
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr [pSelectableRow]="rowData">
+            <td *ngFor="let col of columns" class="ui-resizable-column">
+                <span *ngIf='isDate(rowData[col.field]); else elseDateBlock'>
+                    {{rowData[col.field] | date:'MM/dd/yyyy' : 'UTC' }}
+                </span>
+                <ng-template #elseDateBlock>
+                    <span>
+                        {{rowData[col.field] }}
+                    </span>
+                </ng-template>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="summary" let-rowData>
+        <div style="text-align:left">
+            <button type="button" pButton icon="fa fa-plus" (click)="showAddDialog()" label="Add New"></button>
+            <button type="button" pButton icon="fa fa-close" (click)="onRowSelect()" label="Edit"></button>
+            <button type="button" pButton icon="fa fa-close" class="ui-button-danger" (click)="delete()"
+                label="Delete"></button>
+
+        </div>
+    </ng-template>
+</p-table>
+<div *ngIf="selectedProject" style="text-align:left">
+    {{selectedProject.id}}
+</div>
+<p-dialog header="Project Details" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
+    [style]="{width:'400px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"
+    [contentStyle]="{'overflow':'visible'}">
+    <form [formGroup]="projectForm" (ngSubmit)="save()">
+        <div class="ui-g ui-fluid" *ngIf="newProject">
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="Name">Name</label>
+                </div>
+                <div class="ui-g-8">
+                    <input pInputText id="name" formControlName="name" />
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="desc">Desc</label>
+                </div>
+                <div class="ui-g-8">
+                    <textarea [rows]="3" [cols]="25" pInputTextarea id="desc" formControlName="desc"
+                        autoResize="autoResize"></textarea>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="desc">Application</label>
+                </div>
+                <div class="ui-g-8 ui-dropdown-item">
+                    <p-dropdown [options]="commonDataComponent.applications.itemList" placeholder="Select App"
+                        formControlName="application"></p-dropdown>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="PM">PM</label>
+                </div>
+                <div class="ui-g-8 ui-dropdown-item">
+                    <p-dropdown [options]="commonDataComponent.projectManagers.itemList" placeholder="Select PM"
+                        formControlName="PM">
+                    </p-dropdown>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="brand">QA Date</label>
+                </div>
+                <div class="ui-g-8">
+                    <p-calendar formControlName="QA_DATE" [showIcon]="true" [monthNavigator]="true"
+                        [yearNavigator]="true" yearRange="2019:2025"></p-calendar>
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="brand">UAT Date</label>
+                </div>
+                <div class="ui-g-8">
+                    <p-calendar formControlName="UAT_DATE" [showIcon]="true" [showIcon]="true" [monthNavigator]="true"
+                        [yearNavigator]="true" yearRange="2019:2025"></p-calendar>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="PROD_DATE">PROD Date</label>
+                </div>
+                <div class="ui-g-8">
+                    <p-calendar formControlName="PROD_DATE" [showIcon]="true" [showIcon]="true" [monthNavigator]="true"
+                        [yearNavigator]="true" yearRange="2019:2025"></p-calendar>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="release">Release</label>
+                </div>
+                <div class="ui-g-8 ui-dropdown-item">
+
+                    <p-dropdown [options]="commonDataComponent.releases.itemList" placeholder="Select Release"
+                        formControlName="release">
+                    </p-dropdown>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="status">Status</label>
+                </div>
+                <div class="ui-g-8 ui-dropdown-item">
+                    <p-dropdown [options]="commonDataComponent.projectStatuses.itemList" placeholder="Select Status"
+                        formControlName="status"></p-dropdown>
+                </div>
+            </div>
+        </div>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="submit" pButton icon="fa fa-check" label="Save" [disabled]="!projectForm.valid"></button>
+            </div>
+        </p-footer>
+
+    </form>
+</p-dialog>

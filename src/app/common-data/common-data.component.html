@@ -1,0 +1,50 @@
+<div class="left-panel">
+  <p-accordion>
+    <p-accordionTab header="Releases">
+      <div class="ui-g">
+        <input type="text" pInputText [(ngModel)]="releases.selectedItem" />
+        <button pButton type="button" label="Add" (click)="addData(RELEASES_KEY)"></button>
+        <button pButton type="button" label="Delete" (click)="deleteData(RELEASES_KEY)"></button>
+        <button pButton type="button" label="Clear" (click)="clearData(RELEASES_KEY)"></button>
+      </div>
+      <p-listbox [options]="releases.itemList" [(ngModel)]="releases.selectedItem"></p-listbox>
+    </p-accordionTab>
+    <p-accordionTab header="Project Status">
+      <div class="ui-g">
+        <input type="text" pInputText [(ngModel)]="projectStatuses.selectedItem" />
+        <button pButton type="button" label="Add" (click)="addData(PROJECT_STATUS_KEY)"></button>
+        <button pButton type="button" label="Delete" (click)="deleteData(PROJECT_STATUS_KEY)"></button>
+        <button pButton type="button" label="Clear" (click)="clearData(PROJECT_STATUS_KEY)"></button>
+      </div>
+      <p-listbox [options]="projectStatuses.itemList" [(ngModel)]="projectStatuses.selectedItem"></p-listbox>
+    </p-accordionTab>
+    <p-accordionTab header="Project Manager">
+      <div class="ui-g">
+        <input type="text" pInputText [(ngModel)]="projectManagers.selectedItem" />
+        <button pButton type="button" label="Add" (click)="addData(PROJECT_MANAGER_KEY)"></button>
+        <button pButton type="button" label="Delete" (click)="deleteData(PROJECT_MANAGER_KEY)"></button>
+        <button pButton type="button" label="Clear" (click)="clearData(PROJECT_MANAGER_KEY)"></button>
+      </div>
+      <p-listbox [options]="projectManagers.itemList" [(ngModel)]="projectManagers.selectedItem"></p-listbox>
+    </p-accordionTab>
+    <p-accordionTab header="Developer Status">
+      <div class="ui-g">
+        <input type="text" pInputText [(ngModel)]="developerStatuses.selectedItem" />
+        <button pButton type="button" label="Add" (click)="addData(DEVELOPER_STATUS)"></button>
+        <button pButton type="button" label="Delete" (click)="deleteData(DEVELOPER_STATUS)"></button>
+        <button pButton type="button" label="Clear" (click)="clearData(DEVELOPER_STATUS)"></button>
+      </div>
+      <p-listbox [options]="developerStatuses.itemList" [(ngModel)]="developerStatuses.selectedItem"></p-listbox>
+    </p-accordionTab>
+    <p-accordionTab header="Applications">
+      <div class="ui-g">
+        <input type="text" pInputText [(ngModel)]="applications.selectedItem" />
+        <button pButton type="button" label="Add" (click)="addData(APPLICATIONS)"></button>
+        <button pButton type="button" label="Delete" (click)="deleteData(APPLICATIONS)"></button>
+        <button pButton type="button" label="Clear" (click)="clearData(APPLICATIONS)"></button>
+      </div>
+      <p-listbox [options]="applications.itemList" [(ngModel)]="applications.selectedItem"></p-listbox>
+    </p-accordionTab>
+
+  </p-accordion>
+</div>
