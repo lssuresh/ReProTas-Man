@@ -8,23 +8,23 @@ import { Developer } from './Developer';
 })
 export class DevelopersService {
 
-   private elasticType = "developer";
-  
+  private elasticType = "developer";
+
   constructor(private elasticService: ElasticsearchService) {
   }
 
-  loadDevelopers(): Observable<Developer[]> {      
-     return this.elasticService.getAllDocuments(Developer.name, Developer);
+  loadDevelopers(): Observable<Developer[]> {
+    return this.elasticService.getAllDocuments(Developer.name, Developer);
   }
 
-  addDeveloper(developer:Developer): Observable<Developer> {     
-       
+  addDeveloper(developer: Developer): Observable<Developer> {
+
     return this.elasticService.addDocument(developer);
   }
-  deleteDeveloper(developer:Developer): Observable<Developer> {     
+  deleteDeveloper(developer: Developer): Observable<Developer> {
     return this.elasticService.deleteDocument(developer);
   }
-  updateDeveloper(developer:Developer): Observable<Developer> {     
+  updateDeveloper(developer: Developer): Observable<Developer> {
     return this.elasticService.updateDocument(developer);
   }
 }
