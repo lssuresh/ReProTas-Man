@@ -5,7 +5,7 @@ export class Project extends Base {
   id: string;
   name: string;
   desc: string;
-  application:string;
+  application: string;
   PM: string;
   QA_DATE: Date;
   UAT_DATE: Date;
@@ -14,7 +14,7 @@ export class Project extends Base {
   release: string;
 
   constructor() {
-    super();
+    super(Project.name);
   }
 
   deserialize(_id: string, input: any): this {
@@ -22,12 +22,7 @@ export class Project extends Base {
     this.id = _id;
     this.QA_DATE = new Date(input.QA_DATE);
     this.UAT_DATE = new Date(input.UAT_DATE);
-    this.PROD_DATE = new Date(input.PROD_DATE);     
+    this.PROD_DATE = new Date(input.PROD_DATE);
     return this;
   }
-
-  getElasticType(): string {
-    return Project.name;
-  }
-
 }

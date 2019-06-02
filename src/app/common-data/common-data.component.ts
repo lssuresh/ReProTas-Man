@@ -23,6 +23,7 @@ export class CommonDataComponent implements OnInit {
   PROJECT_MANAGER_KEY = 'ProjectManager';
   DEVELOPER_STATUS = 'DeveloperStatus';
   APPLICATIONS = "Applications";
+  TASK_STATUS = 'TaskStatus';
 
   private commonData: CommonData;
 
@@ -34,6 +35,7 @@ export class CommonDataComponent implements OnInit {
   projectStatuses: DropDownCommonData = { selectedItem: '', itemList: [] };
   developerStatuses: DropDownCommonData = { selectedItem: '', itemList: [] };
   applications: DropDownCommonData = { selectedItem: '', itemList: [] };
+  taskStatuses: DropDownCommonData = { selectedItem: '', itemList: [] };
 
   constructor(private commonDataService: CommonDataService, private msgsComponent: MsgsComponent) {
 
@@ -43,6 +45,7 @@ export class CommonDataComponent implements OnInit {
     this.dropdownItemsMap.set(this.PROJECT_STATUS_KEY, this.projectStatuses);
     this.dropdownItemsMap.set(this.DEVELOPER_STATUS, this.developerStatuses);
     this.dropdownItemsMap.set(this.APPLICATIONS, this.applications);
+    this.dropdownItemsMap.set(this.TASK_STATUS, this.taskStatuses);
 
     this.createCommonData();
 

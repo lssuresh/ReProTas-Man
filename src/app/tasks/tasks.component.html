@@ -1,3 +1,167 @@
-<p>
-  tasks works!
-</p>
+<p-table #dt [columns]="columnsToDisplay" [value]="tasks" selectionMode="single" [(selection)]="selectedTask"
+  [paginator]="true" [rows]="15" [resizableColumns]="true" *ngIf="developers && projects">
+  <ng-template pTemplate="caption">
+    <div style="text-align: right">
+      <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+      <input type="text" pInputText size="50" placeholder="Global Filter"
+        (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
+        {{col.header}}
+        <p-sortIcon [field]="col.field"></p-sortIcon>
+      </th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr [pSelectableRow]="rowData">
+      <td *ngFor="let col of columns" class="ui-resizable-column">
+        <span>
+          {{getTransformedValue(col.field, rowData[col.field])}}
+        </span>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary" let-rowData>
+    <div style="text-align:left">
+      <button type="button" pButton icon="fa fa-plus" (click)="showAddDialog()" label="Add New"></button>
+      <button type="button" pButton icon="fa fa-close" (click)="onRowSelect()" label="Edit"></button>
+      <button type="button" pButton icon="fa fa-close" class="ui-button-danger" (click)="delete()"
+        label="Delete"></button>
+    </div>
+  </ng-template>
+</p-table>
+<div *ngIf="selectedTask" style="text-align:left">
+  {{selectedTask.id}}
+</div>
+<p-dialog header="Task Details" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
+  [style]="{width:'500px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"
+  [contentStyle]="{'overflow':'visible'}" (onHide)='reset()'>
+  <p-messages [(value)]="errorMsgs"></p-messages>
+  <form (ngSubmit)="save()">
+    <div class="ui-g ui-fluid" *ngIf="selectedTask">
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="mobile">Developer</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-dropdown [options]="developerDisplayList" [filter]="true" (onChange)="setSelectDeveloper($event.value)"
+            name="developer" placeholder="Select Developer" [selectId]="selectedDeveloper.name"
+            [(ngModel)]="selectedTask.developer">
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="Name">Name</label>
+        </div>
+        <div class="ui-g-8">
+          <input pInputText id="name" [(ngModel)]="selectedTask.name" name="name" />
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="phone">Application</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-dropdown [options]="commonDataComponent.applications.itemList" placeholder="Select Application"
+            name="application" [(ngModel)]="selectedTask.application">
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="comments">Comments</label>
+        </div>
+        <div class="ui-g-8">
+          <textarea [rows]="3" [cols]="35" pInputTextarea id="comments" autoResize="autoResize" name="comments"
+            [(ngModel)]="selectedTask.comments"></textarea>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="project">Project</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-dropdown [options]="projectDisplayList" [filter]="true" (onChange)="setSelectProject($event.value)"
+            name="project" placeholder="Select Project" [dataKey]="code" [(ngModel)]="selectedTask.project">
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="start_date">Start Date</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-calendar name="start_date" [showIcon]="true" [monthNavigator]="true" [yearNavigator]="true"
+            yearRange="2019:2025" [(ngModel)]="selectedTask.start_date"></p-calendar>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="end_date">End Date</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-calendar name="end_date" [showIcon]="true" [monthNavigator]="true" [yearNavigator]="true"
+            yearRange="2019:2025" [(ngModel)]="selectedTask.end_date"></p-calendar>
+
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="QA_DATE">QA Date</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-calendar name="QA_DATE" [showIcon]="true" [monthNavigator]="true" [yearNavigator]="true"
+            yearRange="2019:2025" [(ngModel)]="selectedProject.QA_DATE" [disabled]="true">
+          </p-calendar>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="UAT_DATE">UAT Date </label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-calendar name="UAT_DATE" [showIcon]="true" [monthNavigator]="true" [yearNavigator]="true"
+            yearRange="2019:2025" [(ngModel)]="selectedProject.UAT_DATE" [disabled]="true"></p-calendar>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="PROD_DATE">Prod Date</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-calendar name="PROD_DATE" [showIcon]="true" [monthNavigator]="true" [yearNavigator]="true"
+            yearRange="2019:2025" [(ngModel)]="selectedProject.PROD_DATE" [disabled]="true"></p-calendar>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="status">Status</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item" ui-dropdown-item>
+          <p-dropdown [options]="commonDataComponent.taskStatuses.itemList" placeholder="Select Status" name="status"
+            [(ngModel)]="selectedTask.status">
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
+          <label for="send_reminder">Send Reminder</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-toggleButton name="send_reminder" [(ngModel)]="selectedTask.send_reminder"></p-toggleButton>
+        </div>
+      </div>
+    </div>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button type="submit" pButton icon="fa fa-check" label="Save"></button>
+        <button type="cancel" pButton icon="fa fa-check" label="cancel" (click)='displayDialog=false'></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>

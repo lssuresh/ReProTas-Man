@@ -7,6 +7,9 @@ export class SingleCommonData extends Base {
 
     elasticType = SingleCommonData.name; 
 
+    constructor(){
+        super(SingleCommonData.name);
+    }
 
     getElasticType(): string {
         return SingleCommonData.name;

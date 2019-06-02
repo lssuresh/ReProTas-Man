@@ -2,23 +2,23 @@ import { Injectable } from '@angular/core';
 import { ElasticsearchService } from '../elasticsearch.service';
 import { Observable } from 'rxjs';
 import { Developer } from './Developer';
+import { BaseService } from '../base-service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DevelopersService {
+export class DevelopersService extends BaseService {
 
-  private elasticType = "developer";
+  elasticType = "developer";
 
-  constructor(private elasticService: ElasticsearchService) {
+  constructor(elasticService: ElasticsearchService) {
+    super(elasticService);
   }
 
   loadDevelopers(): Observable<Developer[]> {
     return this.elasticService.getAllDocuments(Developer.name, Developer);
   }
-
   addDeveloper(developer: Developer): Observable<Developer> {
-
     return this.elasticService.addDocument(developer);
   }
   deleteDeveloper(developer: Developer): Observable<Developer> {
@@ -27,5 +27,7 @@ export class DevelopersService {
   updateDeveloper(developer: Developer): Observable<Developer> {
     return this.elasticService.updateDocument(developer);
   }
+  getActiveDevelopers(): Observable<Developer[]> {
+    return this.getWithFieldValueInType(Developer, "status", "Active");
+  }
 }
-

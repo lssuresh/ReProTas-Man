@@ -9,19 +9,16 @@ export class Developer extends Base {
   email: string;
   workHours: string;
   status: string;
- 
+
   constructor() {
-    super();
+    super(Developer.name);
   }
 
   deserialize(_id: string, input: any): this {
     Object.assign(this, input);
-    this.id = _id; 
-   return this;
+    this.id = _id;
+    return this;
   }
 
-  getElasticType(): string {
-    return Developer.name;
-  }
 
 }

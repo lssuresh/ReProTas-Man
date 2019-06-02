@@ -7,8 +7,11 @@ export class ObjectFactory {
 
   static createNewTypeFrom<T extends Deserializable>(p: any, type: { new(): T; }): T {
     var t = new type();
+
+    // we need to back this up and set it.
+    var elasticType = t.getElasticType();
     t = Object.assign(t, p.value);
-    t.setElasticType(t.getElasticType());
+    t.setElasticType(elasticType);
     return t;
   }
 }

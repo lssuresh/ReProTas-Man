@@ -3,28 +3,37 @@ import { ElasticsearchService } from '../elasticsearch.service';
 import { Task } from './task';
 import { Observable } from 'rxjs';
 
+import { ProjectsService } from '../projects/projects.service';
+import { DevelopersService } from '../developers/developers.service';
+import { Developer } from '../developers/Developer';
+import { Project } from '../projects/Project';
+import { BaseService } from '../base-service';
+
 @Injectable({
   providedIn: 'root'
 })
-export class TasksService {
+export class TasksService extends BaseService {
 
-  private elasticType = "task";
+  elasticType = "task";
 
-  constructor(private elasticService: ElasticsearchService) {
+  constructor(elasticService: ElasticsearchService,
+    private projectService: ProjectsService,
+    private developersService: DevelopersService) {
+    super(elasticService);
   }
 
-  loadDevelopers(): Observable<Task[]> {
-    return this.elasticService.getAllDocuments(Task.name, Task);
+  loadTasks(): Observable<Task[]> {
+    return this.elasticService.getAllDocuments(Task.name, Task)
   }
 
-  addDeveloper(task: Task): Observable<Task> {
-
+  addTask(task: Task): Observable<Task> {
     return this.elasticService.addDocument(task);
   }
-  deleteDeveloper(task: Task): Observable<Task> {
+  deleteTask(task: Task): Observable<Task> {
     return this.elasticService.deleteDocument(task);
   }
-  updateDeveloper(task: Task): Observable<Task> {
+  updateTask(task: Task): Observable<Task> {
     return this.elasticService.updateDocument(task);
   }
+
 }

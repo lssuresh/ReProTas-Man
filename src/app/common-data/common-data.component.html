@@ -45,6 +45,15 @@
       </div>
       <p-listbox [options]="applications.itemList" [(ngModel)]="applications.selectedItem"></p-listbox>
     </p-accordionTab>
+    <p-accordionTab header="Task Status">
+      <div class="ui-g">
+        <input type="text" pInputText [(ngModel)]="taskStatuses.selectedItem" />
+        <button pButton type="button" label="Add" (click)="addData(TASK_STATUS)"></button>
+        <button pButton type="button" label="Delete" (click)="deleteData(TASK_STATUS)"></button>
+        <button pButton type="button" label="Clear" (click)="clearData(TASK_STATUS)"></button>
+      </div>
+      <p-listbox [options]="taskStatuses.itemList" [(ngModel)]="taskStatuses.selectedItem"></p-listbox>
+    </p-accordionTab>
 
   </p-accordion>
 </div>

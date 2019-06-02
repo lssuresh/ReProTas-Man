@@ -114,7 +114,7 @@ export class DevelopersComponent implements OnInit {
 
     }
     this.refreshWithTimer();
-    console.log("Updated ID" + this.selectedDeveloper.id);  
+    console.log("Updated ID" + this.selectedDeveloper.id);
     this.addDeveloper = null;
     this.newDeveloper = null;
     this.displayDialog = false;
@@ -138,6 +138,7 @@ export class DevelopersComponent implements OnInit {
       this.displayDialog = true;
     }
   }
+
 
   isDate(val): boolean {
     return val instanceof Date;
