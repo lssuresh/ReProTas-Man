@@ -1,5 +1,6 @@
-<p-table #dt [columns]="columnsToDisplay" [value]="tasks" selectionMode="single" [(selection)]="selectedTask"
-  [paginator]="true" [rows]="15" [resizableColumns]="true" *ngIf="developers && projects">
+<p-table #dt [columns]="columnsToDisplay" [value]="tasksUIData" selectionMode="single"
+  [(selection)]="selectedTaskUIData" [paginator]="true" [rows]="15" [resizableColumns]="true"
+  *ngIf="developers && projects">
   <ng-template pTemplate="caption">
     <div style="text-align: right">
       <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
@@ -15,13 +16,36 @@
       </th>
     </tr>
   </ng-template>
-
-  <ng-template pTemplate="body" let-rowData let-columns="columns">
+  <ng-template pTemplate="body" let-rowData>
     <tr [pSelectableRow]="rowData">
-      <td *ngFor="let col of columns" class="ui-resizable-column">
-        <span>
-          {{getTransformedValue(col.field, rowData[col.field])}}
-        </span>
+      <td>
+        {{rowData.developerName}}
+      </td>
+      <td>
+        {{rowData.task.name}}
+      </td>
+      <td>
+        {{rowData.task.application}}
+      </td>
+      <td>
+        {{rowData.projectName}}
+      </td>
+
+      <td>
+        {{rowData.task.start_date | dateFormatPipe }}
+      </td>
+
+      <td>
+        {{rowData.task.end_date | dateFormatPipe}}
+      </td>
+      <td>
+        {{rowData.task.status}}
+      </td>
+      <td>
+        {{rowData.task.comments}}
+      </td>
+      <td>
+        {{rowData.task.send_reminder}}
       </td>
     </tr>
   </ng-template>
@@ -34,15 +58,15 @@
     </div>
   </ng-template>
 </p-table>
-<div *ngIf="selectedTask" style="text-align:left">
-  {{selectedTask.id}}
+<div *ngIf="selectedTaskUIData && selectedTaskUIData.task" style="text-align:left">
+  {{selectedTaskUIData.task.id}}
 </div>
 <p-dialog header="Task Details" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
   [style]="{width:'500px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"
   [contentStyle]="{'overflow':'visible'}" (onHide)='reset()'>
   <p-messages [(value)]="errorMsgs"></p-messages>
   <form (ngSubmit)="save()">
-    <div class="ui-g ui-fluid" *ngIf="selectedTask">
+    <div class="ui-g ui-fluid" *ngIf="selectedTaskUIData">
       <div class="ui-g-12">
         <div class="ui-g-4">
           <label for="mobile">Developer</label>
@@ -50,7 +74,7 @@
         <div class="ui-g-8 ui-dropdown-item">
           <p-dropdown [options]="developerDisplayList" [filter]="true" (onChange)="setSelectDeveloper($event.value)"
             name="developer" placeholder="Select Developer" [selectId]="selectedDeveloper.name"
-            [(ngModel)]="selectedTask.developer">
+            [(ngModel)]="selectedTaskUIData.task.developer">
           </p-dropdown>
         </div>
       </div>
@@ -59,7 +83,7 @@
           <label for="Name">Name</label>
         </div>
         <div class="ui-g-8">
-          <input pInputText id="name" [(ngModel)]="selectedTask.name" name="name" />
+          <input pInputText id="name" [(ngModel)]="selectedTaskUIData.task.name" name="name" />
         </div>
       </div>
       <div class="ui-g-12">
@@ -68,7 +92,7 @@
         </div>
         <div class="ui-g-8 ui-dropdown-item">
           <p-dropdown [options]="commonDataComponent.applications.itemList" placeholder="Select Application"
-            name="application" [(ngModel)]="selectedTask.application">
+            name="application" [(ngModel)]="selectedTaskUIData.task.application">
           </p-dropdown>
         </div>
       </div>
@@ -78,7 +102,7 @@
         </div>
         <div class="ui-g-8">
           <textarea [rows]="3" [cols]="35" pInputTextarea id="comments" autoResize="autoResize" name="comments"
-            [(ngModel)]="selectedTask.comments"></textarea>
+            [(ngModel)]="selectedTaskUIData.task.comments"></textarea>
         </div>
       </div>
       <div class="ui-g-12">
@@ -87,7 +111,7 @@
         </div>
         <div class="ui-g-8 ui-dropdown-item">
           <p-dropdown [options]="projectDisplayList" [filter]="true" (onChange)="setSelectProject($event.value)"
-            name="project" placeholder="Select Project" [dataKey]="code" [(ngModel)]="selectedTask.project">
+            name="project" placeholder="Select Project" [dataKey]="code" [(ngModel)]="selectedTaskUIData.task.project">
           </p-dropdown>
         </div>
       </div>
@@ -97,7 +121,7 @@
         </div>
         <div class="ui-g-8 ui-dropdown-item">
           <p-calendar name="start_date" [showIcon]="true" [monthNavigator]="true" [yearNavigator]="true"
-            yearRange="2019:2025" [(ngModel)]="selectedTask.start_date"></p-calendar>
+            yearRange="2019:2025" [(ngModel)]="selectedTaskUIData.task.start_date"></p-calendar>
         </div>
       </div>
       <div class="ui-g-12">
@@ -106,7 +130,7 @@
         </div>
         <div class="ui-g-8 ui-dropdown-item">
           <p-calendar name="end_date" [showIcon]="true" [monthNavigator]="true" [yearNavigator]="true"
-            yearRange="2019:2025" [(ngModel)]="selectedTask.end_date"></p-calendar>
+            yearRange="2019:2025" [(ngModel)]="selectedTaskUIData.task.end_date"></p-calendar>
 
         </div>
       </div>
@@ -144,7 +168,7 @@
         </div>
         <div class="ui-g-8 ui-dropdown-item" ui-dropdown-item>
           <p-dropdown [options]="commonDataComponent.taskStatuses.itemList" placeholder="Select Status" name="status"
-            [(ngModel)]="selectedTask.status">
+            [(ngModel)]="selectedTaskUIData.task.status">
           </p-dropdown>
         </div>
       </div>
@@ -153,7 +177,7 @@
           <label for="send_reminder">Send Reminder</label>
         </div>
         <div class="ui-g-8 ui-dropdown-item">
-          <p-toggleButton name="send_reminder" [(ngModel)]="selectedTask.send_reminder"></p-toggleButton>
+          <p-toggleButton name="send_reminder" [(ngModel)]="selectedTaskUIData.task.send_reminder"></p-toggleButton>
         </div>
       </div>
     </div>

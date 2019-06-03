@@ -5,6 +5,7 @@ import { ProjectsComponent } from './projects/projects.component';
 import { CommonDataComponent } from './common-data/common-data.component';
 import { DevelopersComponent } from './developers/developers.component';
 import { TasksComponent } from './tasks/tasks.component';
+import { TeamTasksComponent } from './team-tasks/team-tasks.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/tasks', pathMatch: 'full' },
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'common-data', component: CommonDataComponent },
   { path: 'developers', component: DevelopersComponent },
   { path: 'tasks', component: TasksComponent },
+  { path: 'team-tasks', component: TeamTasksComponent }
 ];
 
 @NgModule({

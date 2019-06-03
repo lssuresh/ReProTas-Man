@@ -5,4 +5,8 @@ export class TaskUIData {
     developerName: string;
     projectName: string;
 
+    constructor() {
+        this.task = new Task();
+    }
+
 }

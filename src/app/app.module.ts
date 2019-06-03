@@ -32,6 +32,8 @@ import { DevelopersComponent } from './developers/developers.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 
+import { DateFormatPipe } from './DatePipe';
+import { TeamTasksComponent } from './team-tasks/team-tasks.component'
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { ProgressBarModule } from 'primeng/progressbar';
     MsgsComponent,
     CommonDataComponent,
     DevelopersComponent,
-    TasksComponent
+    DateFormatPipe,
+    TasksComponent,
+    TeamTasksComponent
   ],
   imports: [
     BrowserModule,

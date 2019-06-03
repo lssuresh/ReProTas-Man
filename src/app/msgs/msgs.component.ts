@@ -1,7 +1,7 @@
-import { Component, OnInit, Injectable } from '@angular/core';   
-import {MessageService} from 'primeng/components/common/messageservice';
+import { Component, OnInit, Injectable } from '@angular/core';
+import { MessageService } from 'primeng/components/common/messageservice';
 
- 
+
 @Component({
   selector: 'app-msgs',
   templateUrl: './msgs.component.html',
@@ -11,31 +11,39 @@ import {MessageService} from 'primeng/components/common/messageservice';
 @Injectable()
 export class MsgsComponent implements OnInit {
 
- 
+
 
   constructor(private messageService: MessageService) { }
 
   ngOnInit() {
   }
 
-  showError(msg){
+  showError(msg) {
     this.messageService.clear();
-    this.messageService.add({ severity: 'warn', summary: 'Error', 
-          detail: msg});
+    this.messageService.add({
+      severity: 'warn', summary: 'Error',
+      detail: msg
+    });
   }
 
-  showInfo(msg){
+  showInfo(msg) {
     this.messageService.clear();
-    this.messageService.add({ severity: 'Info', summary: 'Info', 
-          detail: msg});
+    this.messageService.add({
+      severity: 'Info', summary: 'Info',
+      detail: msg
+    });
   }
 
-  showWarn(msg){
+  showWarn(msg) {
     this.messageService.clear();
-    this.messageService.add({ severity: 'warn', summary: 'Warn', 
-          detail: msg});
+    this.messageService.add({
+      severity: 'warn', summary: 'Warn',
+      detail: msg
+    });
   }
-
+  clear() {
+    this.messageService.clear();
+  }
 
 
 }

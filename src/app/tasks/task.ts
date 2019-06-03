@@ -24,8 +24,10 @@ export class Task extends Base {
     deserialize(_id: string, input: any): this {
         Object.assign(this, input);
         this.id = _id;
-        this.start_date = new Date(input.start_date);
-        this.end_date = new Date(input.end_date);
+        if (input.start_date != null)
+            this.start_date = new Date(input.start_date);
+        if (this.end_date != null)
+            this.end_date = new Date(input.end_date);
         // this.QA_DATE = new Date(input.QA_DATE);
         // this.UAT_DATE = new Date(input.UAT_DATE);
         // this.PROD_DATE = new Date(input.PROD_DATE);

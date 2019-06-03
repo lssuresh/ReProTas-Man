@@ -18,13 +18,16 @@ export class ElasticsearchService {
   private static QUERY_OPERAND = '$OPERAND$';
 
   query_search = `{
-  "query": {
-    "simple_query_string": {
-      "query": "`+ ElasticsearchService.QUERY_VALUE + `",
-        "fields": [
-          `+ ElasticsearchService.QUERY_KEY + `
-        ],
-          "default_operator": "`+ ElasticsearchService.QUERY_OPERAND + `"
+  "query": { 
+    "bool": { 
+      "must": [
+        { "match": { "title":   "Search"}}, 
+        { "match": { "content": "Elasticsearch"}}  
+      ],
+      "filter": [ 
+        { "term":  { "status": "published" }}, 
+        { "range": { "publish_date": { "gte": "2015-01-01" }}} 
+      ]
     }
   }
 }`;
@@ -132,9 +135,35 @@ export class ElasticsearchService {
     }
   }
 
-  getDocumentMatchingNameValue(_type: any, key: string, value: string) {
-    if (_type && key && value) {
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), this.buildQuery(["elasticType", key], [_type.name, value]));
+  getDocumentMatchingNameValue(_type: any, key: string, valueArr: string[]) {
+    if (_type && key && valueArr) {
+      var value = this.createORValues(valueArr);
+      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), this.buildSimpleQuery(["elasticType", key], [_type.name, value]));
+    } else {
+      console.log("Invalid Params Name: " + name);
+    }
+  }
+
+  createORValues(valueArr: string[]) {
+    var returnVal = "(";
+    valueArr.forEach(value => returnVal + " | " + value + ",");
+    returnVal = returnVal + ")";
+    return returnVal;
+  }
+
+  getDocumentNotMatchingNameValue(_type: any, name: string, valueArr: string[]): Observable<any> {
+    if (_type && name && valueArr) {
+      var value = this.createORValues(valueArr);
+      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), this.buildSimpleQuery(["elasticType", name], [_type.name, "-" + value]));
+    } else {
+      console.log("Invalid Params Name: " + name);
+    }
+  }
+
+  getFieldValueNotInAndRange(_type: any, name: string, valueArr: string[], rangeStart: Date, rangeEnd: Date) {
+    if (_type && name && valueArr) {
+      var value = this.createORValues(valueArr);
+      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), this.buildSimpleQuery(["elasticType", name], [_type.name, "-" + value]));
     } else {
       console.log("Invalid Params Name: " + name);
     }
@@ -174,7 +203,7 @@ export class ElasticsearchService {
   getSearchURL() {
     return this.getURLWithURI('/_search');
   }
-  private buildQuery(key: string[], value: string[]) {
+  private buildSimpleQuery(key: string[], value: string[]) {
     return this.query_search.replace(ElasticsearchService.QUERY_KEY, key.map(item => '"' + item + '"').toString())
       .replace(ElasticsearchService.QUERY_VALUE, value.map(item => ' ' + item).toString())
       .replace(ElasticsearchService.QUERY_OPERAND, 'and');

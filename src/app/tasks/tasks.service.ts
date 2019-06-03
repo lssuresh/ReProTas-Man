@@ -13,7 +13,7 @@ import { BaseService } from '../base-service';
   providedIn: 'root'
 })
 export class TasksService extends BaseService {
-
+ 
   elasticType = "task";
 
   constructor(elasticService: ElasticsearchService,
@@ -35,5 +35,12 @@ export class TasksService extends BaseService {
   updateTask(task: Task): Observable<Task> {
     return this.elasticService.updateDocument(task);
   }
+  getOpenTasks() {
+    return this.elasticService.getDocumentNotMatchingNameValue(Task, "status", ["Closed"]);
+  }
+  getOpenTasksBetweenDates(rangeStart: Date, rangeEnd: Date) {
+    return this.elasticService.getFieldValueNotInAndRange(Task, "status", ["Closed"], rangeStart, rangeEnd)
+  }
+   
 
 }

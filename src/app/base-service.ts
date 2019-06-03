@@ -14,8 +14,12 @@ export class BaseService {
     getWithId<T>(id: string): Observable<T> {
         return this.elasticService.getDocumentWithID(this.elasticType, id);
     }
-    getWithFieldValueInType<T>(t:T, name: string, value: string): Observable<any> {
-        return this.elasticService.getDocumentMatchingNameValue(t, name, value);
+    getWithFieldValueInType<T>(t: T, name: string, valueArr: string[]): Observable<any> {
+        return this.elasticService.getDocumentMatchingNameValue(t, name, valueArr);
+    }
+
+    getWithFieldValueNotInType<T>(t: T, name: string, valueArr: string[]): Observable<any> {
+        return this.elasticService.getDocumentNotMatchingNameValue(t, name, valueArr);
     }
     getElasticService() {
         return this.elasticService;
