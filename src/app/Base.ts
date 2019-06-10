@@ -1,7 +1,6 @@
 import { Deserializable } from './Deserializable';
-import { Cloneable } from './Cloneable';
 
-export class Base implements Deserializable, Cloneable {
+export class Base implements Deserializable {
   id: string;
   elasticType: string;
 

@@ -6,6 +6,7 @@ import { Globals } from './config/globals';
 import { Observable, of, from, Subscriber, observable } from 'rxjs';
 import { Deserializable } from './Deserializable';
 import { ObjectFactory } from './ObjectFactory';
+import { ElasticQuery } from './elastic-query';
 
 @Injectable({
   providedIn: 'root'
@@ -13,24 +14,8 @@ import { ObjectFactory } from './ObjectFactory';
 export class ElasticsearchService {
 
   private client: Client;
-  private static QUERY_KEY = '$KEY$';
-  private static QUERY_VALUE = '$VALUE$';
-  private static QUERY_OPERAND = '$OPERAND$';
 
-  query_search = `{
-  "query": { 
-    "bool": { 
-      "must": [
-        { "match": { "title":   "Search"}}, 
-        { "match": { "content": "Elasticsearch"}}  
-      ],
-      "filter": [ 
-        { "term":  { "status": "published" }}, 
-        { "range": { "publish_date": { "gte": "2015-01-01" }}} 
-      ]
-    }
-  }
-}`;
+
 
   httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
@@ -69,7 +54,7 @@ export class ElasticsearchService {
     return observable;
   }
 
-  postAndGetDocumentsAsArray(_type, url, body) {
+  postAndGetDocumentsAsArray(_type, url, body): Observable<any[]> {
     var subscriberRef = new Subscriber<any[]>();
     var observable = Observable.create((observer: Subscriber<any[]>) => {
       subscriberRef = observer;
@@ -135,39 +120,67 @@ export class ElasticsearchService {
     }
   }
 
-  getDocumentMatchingNameValue(_type: any, key: string, valueArr: string[]) {
+  matchValue(_type: any, key: string, valueArr: string[]) {
     if (_type && key && valueArr) {
-      var value = this.createORValues(valueArr);
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), this.buildSimpleQuery(["elasticType", key], [_type.name, value]));
+      var eq = new ElasticQuery();
+      eq.addSearchFieldWithValues('elasticType', [_type.name]);
+      eq.addSearchFieldWithValues(key, valueArr);
+
+      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
     } else {
       console.log("Invalid Params Name: " + name);
     }
   }
 
-  createORValues(valueArr: string[]) {
-    var returnVal = "(";
-    valueArr.forEach(value => returnVal + " | " + value + ",");
-    returnVal = returnVal + ")";
-    return returnVal;
-  }
-
-  getDocumentNotMatchingNameValue(_type: any, name: string, valueArr: string[]): Observable<any> {
+  matchNotInValue(_type: any, name: string, valueArr: string[]): Observable<any> {
     if (_type && name && valueArr) {
-      var value = this.createORValues(valueArr);
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), this.buildSimpleQuery(["elasticType", name], [_type.name, "-" + value]));
+      var eq = new ElasticQuery();
+      eq.addSearchFieldWithValues('elasticType', [_type.name]);
+      eq.addSearchFieldWithValues(name, valueArr);
+      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
     } else {
       console.log("Invalid Params Name: " + name);
     }
   }
 
-  getFieldValueNotInAndRange(_type: any, name: string, valueArr: string[], rangeStart: Date, rangeEnd: Date) {
+  matchNotInValueAndRange(_type: any, name: string, valueArr: string[], rangeField: string, rangeStart: Date, rangeEnd: Date): Observable<any[]> {
     if (_type && name && valueArr) {
-      var value = this.createORValues(valueArr);
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), this.buildSimpleQuery(["elasticType", name], [_type.name, "-" + value]));
+      var eq = new ElasticQuery();
+      eq.addSearchFieldWithValues('elasticType', [_type.name]);
+      eq.addSearchValuesNotIn(name, valueArr);
+      eq.addRangeFilter(rangeField, rangeStart, rangeEnd);
+      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
     } else {
       console.log("Invalid Params Name: " + name);
     }
   }
+  matchValueAndRange(_type: any, name: string, valueArr: string[], rangeField: string, rangeStart: Date, rangeEnd: Date) {
+    if (_type && name && valueArr) {
+      var eq = new ElasticQuery();
+      eq.addSearchFieldWithValues('elasticType', [_type.name]);
+      eq.addSearchFieldWithValues(name, valueArr);
+      eq.addRangeFilter(rangeField, rangeStart, rangeEnd);
+      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
+    } else {
+      console.log("Invalid Params Name: " + name);
+    }
+  }
+
+  matchNotInValueAndDiffRange(_type: any, name: string, valueArr: string[], rangeStartField: string, rangeEndField: string,
+    rangeStart: Date, rangeEnd: Date): Observable<any[]> {
+    if (_type && name && valueArr) {
+      var eq = new ElasticQuery();
+      eq.addSearchFieldWithValues('elasticType', [_type.name]);
+      eq.addSearchValuesNotIn(name, valueArr);
+      eq.addRangeFilterGT(rangeStartField, rangeStart);
+      eq.addRangeFilterLT(rangeEndField, rangeEnd);
+
+      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
+    } else {
+      console.log("Invalid Params Name: " + name);
+    }
+  }
+
 
   // We want to use it without index so we use http
   addDocument(value): Observable<any> {
@@ -202,11 +215,6 @@ export class ElasticsearchService {
   }
   getSearchURL() {
     return this.getURLWithURI('/_search');
-  }
-  private buildSimpleQuery(key: string[], value: string[]) {
-    return this.query_search.replace(ElasticsearchService.QUERY_KEY, key.map(item => '"' + item + '"').toString())
-      .replace(ElasticsearchService.QUERY_VALUE, value.map(item => ' ' + item).toString())
-      .replace(ElasticsearchService.QUERY_OPERAND, 'and');
   }
 
 }

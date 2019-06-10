@@ -13,7 +13,7 @@ import { BaseService } from '../base-service';
   providedIn: 'root'
 })
 export class TasksService extends BaseService {
- 
+
   elasticType = "task";
 
   constructor(elasticService: ElasticsearchService,
@@ -36,11 +36,11 @@ export class TasksService extends BaseService {
     return this.elasticService.updateDocument(task);
   }
   getOpenTasks() {
-    return this.elasticService.getDocumentNotMatchingNameValue(Task, "status", ["Closed"]);
+    return this.elasticService.matchNotInValue(Task, "status", ["Closed"]);
   }
   getOpenTasksBetweenDates(rangeStart: Date, rangeEnd: Date) {
-    return this.elasticService.getFieldValueNotInAndRange(Task, "status", ["Closed"], rangeStart, rangeEnd)
+    return this.elasticService.matchNotInValueAndRange(Task, "status", ["Closed"], 'start_date', rangeStart, rangeEnd)
   }
-   
+
 
 }

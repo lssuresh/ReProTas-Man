@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injectable } from '@angular/core';
 
 import { CommonDataComponent } from '../common-data/common-data.component';
 import { DevelopersService } from './developers.service';
@@ -7,13 +7,16 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { MsgsComponent } from '../msgs/msgs.component';
 import { timer } from 'rxjs';
 import { ObjectFactory } from '../ObjectFactory';
+import { Producer } from '../producer';
+import { Consumer } from '../consumer';
 
 @Component({
   selector: 'app-developers',
   templateUrl: './developers.component.html',
   styleUrls: ['./developers.component.css']
 })
-export class DevelopersComponent implements OnInit {
+@Injectable()
+export class DevelopersComponent implements OnInit, Producer {
 
   developers: Developer[];
 
@@ -29,6 +32,8 @@ export class DevelopersComponent implements OnInit {
 
   selectedRelease: string;
 
+  consumerList: Consumer[];
+
   columnsToDisplay: any[] = [
     { field: 'name', header: 'Name' },
     { field: 'phone', header: 'Home Phone' },
@@ -41,7 +46,10 @@ export class DevelopersComponent implements OnInit {
 
 
   constructor(private pfb: FormBuilder, private developerService: DevelopersService,
-    private msgsComponent: MsgsComponent, private commonDataComponent: CommonDataComponent) { }
+    private msgsComponent: MsgsComponent, private commonDataComponent: CommonDataComponent) {
+    this.consumerList = [];
+    this.developers = [];
+  }
 
   ngOnInit() {
     this.refreshDevelopers();
@@ -57,7 +65,6 @@ export class DevelopersComponent implements OnInit {
   }
 
   refreshDevelopers() {
-
     this.developerService.loadDevelopers().subscribe(developers => {
       this.developers = [];
       console.log("Retrieved Developers ===>" + developers);
@@ -71,6 +78,7 @@ export class DevelopersComponent implements OnInit {
       if (developers.length > 0) {
         this.selectedDeveloper = this.developers[0];
       }
+      this.consumerList.forEach(item => item.consume(Developer, this.developers));
     });
   }
 
@@ -139,8 +147,28 @@ export class DevelopersComponent implements OnInit {
     }
   }
 
+  getDevName(id: string): string {
+    var name = "";
+    this.developers.forEach(item => {
+      if (item.id == id) {
+        name = item.name;
+        return;
+      }
+    });
+    return name;
+  }
+  getDeveloperList(): Developer[] {
+    return this.developers;
+  }
 
   isDate(val): boolean {
     return val instanceof Date;
+  }
+
+  addConsumer(consumer: Consumer) {
+    this.consumerList.push(consumer);
+  }
+  removeConsumer(consumer: Consumer) {
+    this.consumerList = this.consumerList.filter(item => item != consumer);
   }
 }

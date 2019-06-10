@@ -3,6 +3,7 @@ import { MessageService } from 'primeng/api';
 import { MsgsComponent } from './msgs/msgs.component'
 import { CommonDataComponent } from './common-data/common-data.component'
 import { TasksComponent } from './tasks/tasks.component';
+import { DevelopersComponent } from './developers/developers.component';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,7 @@ import { TasksComponent } from './tasks/tasks.component';
   styleUrls: [
     './app.component.css'
   ],
-  providers: [MsgsComponent, CommonDataComponent, TasksComponent]
+  providers: [MsgsComponent, CommonDataComponent, TasksComponent, DevelopersComponent]
 })
 export class AppComponent {
   title = 'ReProTas';

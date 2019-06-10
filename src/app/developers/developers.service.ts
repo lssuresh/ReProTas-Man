@@ -28,6 +28,6 @@ export class DevelopersService extends BaseService {
     return this.elasticService.updateDocument(developer);
   }
   getActiveDevelopers(): Observable<Developer[]> {
-    return this.getWithFieldValueInType(Developer, "status", "Active");
+    return this.getWithFieldValueInType(Developer, "status", ["Active"]);
   }
 }

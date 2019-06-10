@@ -143,6 +143,8 @@ export class ProjectsComponent implements OnInit {
       this.displayDialog = true;
     }
   }
+   
+
 
   isDate(val): boolean {
     return val instanceof Date;

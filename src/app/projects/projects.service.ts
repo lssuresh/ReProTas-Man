@@ -30,6 +30,6 @@ export class ProjectsService extends BaseService {
     return this.elasticService.updateDocument(project);
   }
   getOpenProjects(): Observable<Project[]> {
-    return this.getWithFieldValueInType(Project, "status", "Open");
+    return this.getWithFieldValueInType(Project, "status", ["Open"]);
   }
 }
