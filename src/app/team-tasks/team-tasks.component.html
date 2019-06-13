@@ -1,21 +1,21 @@
-<p-table #dt [columns]="columnsToDisplay" [value]="teamDevWeekTasks" selectionMode="single"
-  [(selection)]="selectedTaskUIData" [paginator]="true" [rows]="15" [resizableColumns]="true" *ngIf="teamDevWeekTasks">
+<p-contextMenu [global]="true" [model]="menuItems"></p-contextMenu>
+<p-table #dt [columns]="columnsToDisplay" [value]="teamDevWeekTasks" selectionMode="single" [paginator]="true"
+  [rows]="100" [resizableColumns]="true" *ngIf="teamDevWeekTasks">
   <ng-template pTemplate="caption">
-    <div style="text-align: right">
+    <div #tddev style="text-align: left">
       <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-      <input type="text" pInputText size="50" placeholder="Global Filter"
-        (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      <input pInputText type="text" (input)="dt.filter($event.target.value, 'devName', 'contains')"
+        placeholder="Developer Filter" style="width:auto">
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>
-    <tr>
+    <tr #tr>
       <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
         {{col.header}}
-        <p-sortIcon [field]="col.field"></p-sortIcon>
+        <p-sortIcon [field]="col.field" *ngIf='col.header=="Developer"'></p-sortIcon>
       </th>
     </tr>
   </ng-template>
-
   <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
     <tr *ngFor="let row of rowData.maxTaskArrayPlaceHolder; let taskIndex=index">
       <td *ngIf="taskIndex==0" [attr.rowspan]="rowData.maxTasks">
@@ -24,24 +24,15 @@
       <td pEditableColumn *ngFor="let col of weeks">
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <input pInputText type="text" [(ngModel)]="newTask">
+            <input pInputText type="text" [(ngModel)]="newTask" (focusout)="addTask(rowData.devName, col, taskIndex)"
+              (focusin)="editTask(rowData.devName, col, taskIndex)">
           </ng-template>
           <ng-template pTemplate="output">
-            {{getData(rowData.weekTask.get(col), taskIndex)}}             
+            {{getData(rowData.weekTask.get(col), taskIndex)}}
           </ng-template>
         </p-cellEditor>
       </td>
     </tr>
   </ng-template>
-
-  <ng-template pTemplate="summary" let-rowData>
-    <div style="text-align:left">
-      <button type="button" pButton icon="fa fa-plus" (click)="showAddDialog()" label="Add New"></button>
-      <button type="button" pButton icon="fa fa-close" (click)="onRowSelect()" label="Edit"></button>
-      <button type="button" pButton icon="fa fa-close" class="ui-button-danger" (click)="delete()"
-        label="Delete"></button>
-    </div>
-  </ng-template>
 </p-table>
-<div *ngIf="selectedTaskUIData && selectedTaskUIData.task" style="text-align:left">
-</div>
+<div *ngIf="selectedTaskId" style="text-align:left">{{selectedTaskId}}</div>

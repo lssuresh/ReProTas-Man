@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { CommonDataComponent } from '../common-data/common-data.component';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
@@ -18,6 +18,8 @@ import { DevelopersService } from '../developers/developers.service';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { TaskUIData } from './TaskUIData';
 import { DateFormatPipe } from '../DatePipe';
+import { TaskDialogComponent } from './task-dialog/task-dialog.component';
+
 
 @Component({
   selector: 'app-tasks',
@@ -29,10 +31,8 @@ export class TasksComponent implements OnInit {
   DEFAULT_DISPLAY_VAL = "#NAV"
   tasks: Task[];
   tasksUIData: TaskUIData[];
-  rowGroupMetaData: any;
   selectedTaskUIData: TaskUIData;
   displayDialog: boolean;
-  addTask: boolean;
 
   selectedProject: Project;
   selectedDeveloper: Developer;
@@ -40,12 +40,9 @@ export class TasksComponent implements OnInit {
   projects: Project[];
   developers: Developer[];
 
-  projectDisplayList: any[];
-  developerDisplayList: any[];
 
-  progressValue: number;
+  @ViewChild('taskDialog') taskDialog: TaskDialogComponent;
 
-  errorMsgs = [];
 
   columnsToDisplay: any[] = [
     { field: 'developerName', header: 'Developer' },
@@ -67,13 +64,18 @@ export class TasksComponent implements OnInit {
     private msgsComponent: MsgsComponent,
     private commonDataComponent: CommonDataComponent,
     private projectService: ProjectsService,
-    private developersService: DevelopersService
-  ) {
+    private developersService: DevelopersService) {
   }
 
   ngOnInit() {
-    this.developersService.getActiveDevelopers().subscribe(data => this.createDeveloperList(data));
-    this.projectService.getOpenProjects().subscribe(data => this.createProjectsList(data));
+    this.developersService.getActiveDevelopers().subscribe(data => {
+      this.developers = data;
+      this.buildUIDevData();
+    });
+    this.projectService.getOpenProjects().subscribe(data => {
+      this.projects = data;
+      this.buildUIProjectData();
+    });
     this.refreshTasks();
     this.commonDataComponent.refreshCommonData();
     this.reset(null);
@@ -103,81 +105,17 @@ export class TasksComponent implements OnInit {
       if (tasks.length > 0) {
         this.selectedTaskUIData = this.tasksUIData[0];
       }
-      this.progressValue = 30;
     });
-  }
-
-  showAddDialog() {
-    this.errorMsgs = [];
-    this.addTask = true;
-    this.selectedTaskUIData = new TaskUIData();
-    this.displayDialog = true;
-  }
-  save() {
-    if (this.selectedTaskUIData && this.selectedTaskUIData.task.name == null || this.selectedTaskUIData.task.developer == null) {
-      //this.msgsComponent.showError('Please ener value for name and developer');
-      this.errorMsgs.push({ severity: 'error', summary: 'Error Message', detail: 'Please ener value for name.' });
-      return;
-    }
-
-    let Tasks = [...this.tasks];
-    if (this.addTask) {
-      this.tasksService.addTask(this.selectedTaskUIData.task).subscribe(
-        data => {
-          console.log(data);
-          this.tasks.push(this.selectedTaskUIData.task);
-          this.buildUIProjectData();
-          this.buildUIDevData();
-          this.msgsComponent.showInfo('Task data Saved!');
-        }
-      );
-    } else {
-      this.tasksService.updateTask(this.selectedTaskUIData.task).subscribe(
-        data => {
-          console.log(data);
-          this.msgsComponent.showInfo('Task Updated!');
-        });
-
-    }
-    this.refreshWithTimer();
-    console.log("Updated ID" + this.selectedTaskUIData.task.id);
-    this.addTask = null;
-    this.displayDialog = false;
-  }
-
-  delete() {
-    this.tasksService.deleteTask(this.selectedTaskUIData.task).subscribe(
-      data => {
-        console.log("Deleted Successfully!");
-        this.tasks = this.tasks.filter(dev => dev.name != this.selectedTaskUIData.task.name);
-        this.refreshWithTimer();
-        this.msgsComponent.showInfo('Task Deleted!');
-      });
   }
 
   onRowSelect() {
     if (this.selectedTaskUIData) {
-      this.addTask = false;
-      this.displayDialog = true;
+      this.taskDialog.taskComponent = this;
+      this.taskDialog.selectedTaskUIData = this.selectedTaskUIData;
       this.setSelectProject(this.selectedTaskUIData.task.project);
       this.setSelectDeveloper(this.selectedTaskUIData.task.developer);
+      this.displayDialog = true;
     }
-  }
-
-  createDeveloperList(data: Developer[]) {
-    this.developerDisplayList = [];
-    this.developers = data;
-    this.developers.forEach(item => this.developerDisplayList.push({ label: item.name, value: item.id }))
-    this.buildUIDevData();
-
-
-  }
-  createProjectsList(data: Project[]) {
-    this.projectDisplayList = [];
-    this.projects = data;
-    this.projects.forEach(item => this.projectDisplayList.push({ label: item.name, value: item.id }))
-    this.buildUIProjectData();
-
   }
 
   setSelectProject(projectCode) {
@@ -206,7 +144,6 @@ export class TasksComponent implements OnInit {
 
   reset(event: Event) {
     this.selectedTaskUIData = null;
-    this.addTask = null;
     this.selectedProject = new Project();
     this.selectedDeveloper = new Developer();
   }
@@ -250,6 +187,26 @@ export class TasksComponent implements OnInit {
         index++;
       });
     }
+  }
+
+  showAddDialog() {
+    this.taskDialog.init(this);
+    this.displayDialog = true;
+    this.taskDialog.selectedTaskUIData = new TaskUIData();
+    this.taskDialog.showAddDialog();
+  }
+  dialogChange(event) {
+    this.displayDialog = event;
+  }
+
+  delete() {
+    this.tasksService.deleteTask(this.selectedTaskUIData.task).subscribe(
+      data => {
+        console.log("Deleted Successfully!");
+        this.tasks = this.tasks.filter(dev => dev.name != this.selectedTaskUIData.task.name);
+        this.refreshWithTimer();
+        this.msgsComponent.showInfo('Task Deleted!');
+      });
   }
 
 }

@@ -35,6 +35,13 @@ export class TasksService extends BaseService {
   updateTask(task: Task): Observable<Task> {
     return this.elasticService.updateDocument(task);
   }
+  addOrUpdate(task: Task): Observable<Task> {
+    if (!task.id) {
+      return this.addTask(task);
+    } else {
+      return this.updateTask(task);
+    }
+  }
   getOpenTasks() {
     return this.elasticService.matchNotInValue(Task, "status", ["Closed"]);
   }

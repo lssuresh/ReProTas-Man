@@ -1,71 +1,6 @@
-<p-table #dt [columns]="columnsToDisplay" [value]="tasksUIData" selectionMode="single"
-  [(selection)]="selectedTaskUIData" [paginator]="true" [rows]="15" [resizableColumns]="true"
-  *ngIf="developers && projects">
-  <ng-template pTemplate="caption">
-    <div style="text-align: right">
-      <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-      <input type="text" pInputText size="50" placeholder="Global Filter"
-        (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
-    </div>
-  </ng-template>
-  <ng-template pTemplate="header" let-columns>
-    <tr>
-      <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
-        {{col.header}}
-        <p-sortIcon [field]="col.field"></p-sortIcon>
-      </th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData>
-    <tr [pSelectableRow]="rowData">
-      <td>
-        {{rowData.developerName}}
-      </td>
-      <td>
-        {{rowData.task.name}}
-      </td>
-      <td>
-        {{rowData.task.application}}
-      </td>
-      <td>
-        {{rowData.projectName}}
-      </td>
-
-      <td>
-        {{rowData.task.start_date | dateFormatPipe }}
-      </td>
-
-      <td>
-        {{rowData.task.end_date | dateFormatPipe}}
-      </td>
-      <td>
-        {{rowData.task.status}}
-      </td>
-      <td>
-        {{rowData.task.comments}}
-      </td>
-      <td>
-        {{rowData.task.send_reminder}}
-      </td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="summary" let-rowData>
-    <div style="text-align:left">
-      <button type="button" pButton icon="fa fa-plus" (click)="showAddDialog()" label="Add New"></button>
-      <button type="button" pButton icon="fa fa-close" (click)="onRowSelect()" label="Edit"></button>
-      <button type="button" pButton icon="fa fa-close" class="ui-button-danger" (click)="delete()"
-        label="Delete"></button>
-    </div>
-  </ng-template>
-</p-table>
-<div *ngIf="selectedTaskUIData && selectedTaskUIData.task" style="text-align:left">
-  {{selectedTaskUIData.task.id}}
-</div>
-<app-task-dialog #taskDialog [visible]="displayDialog" (displayChange)="dialogChange($event)">
-</app-task-dialog>
-<!-- <p-dialog header="Task Details" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
+<p-dialog header="Task Details" [(visible)]="visible" showEffect="fade" [modal]="true"
   [style]="{width:'500px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"
-  [contentStyle]="{'overflow':'visible'}" (onHide)='reset()'>
+  [contentStyle]="{'overflow':'visible'}" (onHide)="onClose()">
   <p-messages [(value)]="errorMsgs"></p-messages>
   <form (ngSubmit)="save()">
     <div class="ui-g ui-fluid" *ngIf="selectedTaskUIData">
@@ -186,8 +121,8 @@
     <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
         <button type="submit" pButton icon="fa fa-check" label="Save"></button>
-        <button type="cancel" pButton icon="fa fa-check" label="cancel" (click)='displayDialog=false'></button>
+        <button type="cancel" pButton icon="fa fa-check" label="cancel" (click)='hideDialog()'></button>
       </div>
     </p-footer>
   </form>
-</p-dialog> -->
+</p-dialog>

@@ -23,7 +23,8 @@ import { PanelModule } from 'primeng/panel';
 import { AccordionModule } from 'primeng/accordion';
 import { DropdownModule } from 'primeng/dropdown';
 import { ToggleButtonModule } from 'primeng/togglebutton';
-
+import { ContextMenuModule } from 'primeng/contextmenu';
+import { MenuItem } from 'primeng/api';
 
 import { MsgsComponent } from './msgs/msgs.component';
 import { CommonDataComponent } from './common-data/common-data.component';
@@ -33,7 +34,8 @@ import { TasksComponent } from './tasks/tasks.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 
 import { DateFormatPipe } from './DatePipe';
-import { TeamTasksComponent } from './team-tasks/team-tasks.component'
+import { TeamTasksComponent } from './team-tasks/team-tasks.component';
+import { TaskDialogComponent } from './tasks/task-dialog/task-dialog.component'
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import { TeamTasksComponent } from './team-tasks/team-tasks.component'
     DevelopersComponent,
     DateFormatPipe,
     TasksComponent,
-    TeamTasksComponent
+    TeamTasksComponent,
+    TaskDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -67,7 +70,8 @@ import { TeamTasksComponent } from './team-tasks/team-tasks.component'
     AccordionModule,
     DropdownModule,
     ToggleButtonModule,
-    ProgressBarModule
+    ProgressBarModule,
+    ContextMenuModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

@@ -17,6 +17,13 @@ import { Consumer } from '../consumer';
 })
 @Injectable()
 export class DevelopersComponent implements OnInit, Producer {
+  getDevId(devName: string): string {
+    var devWithName = this.getDeveloperList().filter(item => item.name == devName);
+    if (devWithName && devWithName.length > 0) {
+      return devWithName[0].id;
+    }
+    return "";
+  }
 
   developers: Developer[];
 
