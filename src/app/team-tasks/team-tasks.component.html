@@ -1,12 +1,20 @@
-<p-contextMenu [global]="true" [model]="menuItems"></p-contextMenu>
-<p-table #dt [columns]="columnsToDisplay" [value]="teamDevWeekTasks" selectionMode="single" [paginator]="true"
-  [rows]="100" [resizableColumns]="true" *ngIf="teamDevWeekTasks">
+<app-task-dialog #taskAddDialog [visible]="tasksComponent.displayDialog"
+  (displayChange)="tasksComponent.hideDialog($event)" (openDialog)="initDialog($event)"
+  (dataChangeEvent)='dialogDataChanged($event)'>
+</app-task-dialog>
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+<p-contextMenu [model]="menuItems" styleclass="menu-align" #tablecontextmenu></p-contextMenu>
+<p-table #dt [columns]="columnsToDisplay" [value]="teamDevWeekTasks" [paginator]="true" [rows]="100"
+  [resizableColumns]="true" *ngIf="teamDevWeekTasks" [contextMenu]="tablecontextmenu" selectionMode="single">
   <ng-template pTemplate="caption">
     <div #tddev style="text-align: left">
-      <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+      <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
       <input pInputText type="text" (input)="dt.filter($event.target.value, 'devName', 'contains')"
         placeholder="Developer Filter" style="width:auto">
+      <button pButton type="button" class="ui-button-raised ui-button-rounded" icon="pi pi-refresh"
+        (click)="refreshViewData()" style="align-self: center"></button>
     </div>
+
   </ng-template>
   <ng-template pTemplate="header" let-columns>
     <tr #tr>
@@ -21,11 +29,12 @@
       <td *ngIf="taskIndex==0" [attr.rowspan]="rowData.maxTasks">
         {{rowData.devName}}
       </td>
-      <td pEditableColumn *ngFor="let col of weeks">
+      <td pEditableColumn *ngFor="let col of weeks" [pContextMenuRow]="rowData.devName"
+        (mouseup)="onRowSelect($event, rowData.devName, col, taskIndex)">
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <input pInputText type="text" [(ngModel)]="newTask" (focusout)="addTask(rowData.devName, col, taskIndex)"
-              (focusin)="editTask(rowData.devName, col, taskIndex)">
+            <input pInputText type="text" [(ngModel)]="newTask" (focusin)="editTask(rowData.devName, col, taskIndex)"
+              (keydown.enter)="saveTask(rowData.devName, col, taskIndex)">
           </ng-template>
           <ng-template pTemplate="output">
             {{getData(rowData.weekTask.get(col), taskIndex)}}

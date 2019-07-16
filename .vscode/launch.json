@@ -15,7 +15,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost:4200/common-data",
+            "url": "http://localhost:4200/team-tasks",
             "webRoot": "${workspaceFolder}"
         }
     ]

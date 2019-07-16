@@ -1,6 +1,6 @@
 <p-dialog header="Task Details" [(visible)]="visible" showEffect="fade" [modal]="true"
   [style]="{width:'500px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"
-  [contentStyle]="{'overflow':'visible'}" (onHide)="onClose()">
+  [contentStyle]="{'overflow':'visible'}" (onHide)="onClose()" (onShow)="onOpen()">
   <p-messages [(value)]="errorMsgs"></p-messages>
   <form (ngSubmit)="save()">
     <div class="ui-g ui-fluid" *ngIf="selectedTaskUIData">
@@ -101,6 +101,16 @@
       </div>
       <div class="ui-g-12">
         <div class="ui-g-4">
+          <label for="Release">Release</label>
+        </div>
+        <div class="ui-g-8 ui-dropdown-item">
+          <p-dropdown [options]="commonDataComponent.releases.itemList" placeholder="Select Release" name="release"
+            [(ngModel)]="selectedTaskUIData.task.release">
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="ui-g-12">
+        <div class="ui-g-4">
           <label for="status">Status</label>
         </div>
         <div class="ui-g-8 ui-dropdown-item" ui-dropdown-item>
@@ -120,8 +130,8 @@
     </div>
     <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
-        <button type="submit" pButton icon="fa fa-check" label="Save"></button>
-        <button type="cancel" pButton icon="fa fa-check" label="cancel" (click)='hideDialog()'></button>
+        <button type="submit" pButton icon="pi pi-check" label="Save"></button>
+        <button type="cancel" pButton icon="pi pi-times" label="cancel" (click)='hideDialog()'></button>
       </div>
     </p-footer>
   </form>

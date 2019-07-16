@@ -49,5 +49,8 @@ export class TasksService extends BaseService {
     return this.elasticService.matchNotInValueAndRange(Task, "status", ["Closed"], 'start_date', rangeStart, rangeEnd)
   }
 
+  getTasksForRelease(release) {
+    return this.elasticService.matchValue(Task, "release", [release]);
+  }
 
 }

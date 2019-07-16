@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 
 import { TableModule } from 'primeng/table';
 import { SharedModule } from 'primeng/components/common/shared';
-import { ButtonModule } from 'primeng/primeng';
+import { ButtonModule, ConfirmationService, MultiSelectModule } from 'primeng/primeng';
 import { MessageService } from 'primeng/components/common/messageservice';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
@@ -24,18 +24,18 @@ import { AccordionModule } from 'primeng/accordion';
 import { DropdownModule } from 'primeng/dropdown';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ContextMenuModule } from 'primeng/contextmenu';
-import { MenuItem } from 'primeng/api';
-
 import { MsgsComponent } from './msgs/msgs.component';
 import { CommonDataComponent } from './common-data/common-data.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { DevelopersComponent } from './developers/developers.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { ProgressBarModule } from 'primeng/progressbar';
-
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DateFormatPipe } from './DatePipe';
 import { TeamTasksComponent } from './team-tasks/team-tasks.component';
-import { TaskDialogComponent } from './tasks/task-dialog/task-dialog.component'
+import { TaskDialogComponent } from './tasks/task-dialog/task-dialog.component';
+import { ReleaseComponent } from './release/release.component'
+import { TreeModule } from 'primeng/tree';
 
 @NgModule({
   declarations: [
@@ -47,7 +47,8 @@ import { TaskDialogComponent } from './tasks/task-dialog/task-dialog.component'
     DateFormatPipe,
     TasksComponent,
     TeamTasksComponent,
-    TaskDialogComponent
+    TaskDialogComponent,
+    ReleaseComponent
   ],
   imports: [
     BrowserModule,
@@ -69,11 +70,14 @@ import { TaskDialogComponent } from './tasks/task-dialog/task-dialog.component'
     PanelModule,
     AccordionModule,
     DropdownModule,
+    MultiSelectModule,
     ToggleButtonModule,
     ProgressBarModule,
-    ContextMenuModule
+    ContextMenuModule,
+    ConfirmDialogModule,
+    TreeModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

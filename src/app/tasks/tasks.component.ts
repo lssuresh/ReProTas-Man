@@ -1,24 +1,19 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { CommonDataComponent } from '../common-data/common-data.component';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-
-
 import { MsgsComponent } from '../msgs/msgs.component';
 import { TasksService } from './tasks.service';
 import { Task } from './task';
 import { timer } from 'rxjs';
-import { ObjectFactory } from '../ObjectFactory';
-import { ProjectsComponent } from '../projects/projects.component';
 import { Project } from '../projects/Project'
 import { Developer } from '../developers/Developer';
-
 import { ProjectsService } from '../projects/projects.service';
 import { DevelopersService } from '../developers/developers.service';
-import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { TaskUIData } from './TaskUIData';
-import { DateFormatPipe } from '../DatePipe';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
+import { Producer } from '../producer';
+import { Consumer } from '../consumer';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -26,7 +21,8 @@ import { TaskDialogComponent } from './task-dialog/task-dialog.component';
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.css']
 })
-export class TasksComponent implements OnInit {
+export class TasksComponent implements OnInit, Producer {
+
 
   DEFAULT_DISPLAY_VAL = "#NAV"
   tasks: Task[];
@@ -40,6 +36,10 @@ export class TasksComponent implements OnInit {
   projects: Project[];
   developers: Developer[];
 
+  consumers = [];
+
+  taskParam: string;
+  releaseParam:string;
 
   @ViewChild('taskDialog') taskDialog: TaskDialogComponent;
 
@@ -54,42 +54,48 @@ export class TasksComponent implements OnInit {
     // { field: 'QA_DATE', header: 'QA Date' },
     // { field: 'UAT_DATE', header: 'UAT Date' },
     // { field: 'PROD_DATE', header: 'Prod Date' },
+    { field: 'task.release', header: 'Release' },
     { field: 'task.status', header: 'Status' },
     { field: 'task.comments', header: 'Comments' },
     { field: 'task.send_reminder', header: 'Send Reminder' }
   ];
 
 
-  constructor(private tasksService: TasksService,
+  constructor(private route: ActivatedRoute, private tasksService: TasksService,
     private msgsComponent: MsgsComponent,
     private commonDataComponent: CommonDataComponent,
     private projectService: ProjectsService,
     private developersService: DevelopersService) {
+    this.developers = [];
+    this.projects = [];
+    this.tasks = [];
+    this.loadProjects();
+    this.loadDevelopers();
+    this.refreshTasks();
+    this.commonDataComponent.refreshCommonData();
+    this.reset(null);
+    this.route.queryParams.subscribe(params => {
+      this.taskParam = params['task'];
+      this.releaseParam = params['releaseNode'];
+    });
   }
 
   ngOnInit() {
-    this.developersService.getActiveDevelopers().subscribe(data => {
-      this.developers = data;
-      this.buildUIDevData();
-    });
+  }
+
+  loadProjects() {
     this.projectService.getOpenProjects().subscribe(data => {
       this.projects = data;
       this.buildUIProjectData();
     });
-    this.refreshTasks();
-    this.commonDataComponent.refreshCommonData();
-    this.reset(null);
   }
-
-  refreshWithTimer() {
-    let source = timer(1000);
-    source.subscribe(t => {
-      this.refreshTasks();
+  loadDevelopers() {
+    this.developersService.getActiveDevelopers().subscribe(data => {
+      this.developers = data;
+      this.buildUIDevData();
     });
   }
-
-  refreshTasks() {
-    this.tasks = [];
+  loadTasks() {
     this.tasksService.loadTasks().subscribe(tasks => {
       console.log("Retrieved Tasks ===>" + tasks);
       tasks.sort((a, b) => {
@@ -101,19 +107,42 @@ export class TasksComponent implements OnInit {
       this.buildUITaskData();
       this.buildUIDevData();
       this.buildUIProjectData();
-      this.msgsComponent.showInfo('Task list refreshed');
-      if (tasks.length > 0) {
-        this.selectedTaskUIData = this.tasksUIData[0];
+      this.setSelectedTaskUIData()
+      this.consumers.forEach(item => item.consume(Task, this.tasks));
+    });
+  }
+  setSelectedTaskUIData() {
+    if (this.taskParam) {
+      var filteredItems = this.tasksUIData.filter(item => item.task.name == this.taskParam);
+      if (filteredItems && filteredItems.length > 0) {
+        this.selectedTaskUIData = filteredItems[0];
       }
+    }
+  }
+  refreshWithTimer() {
+    let source = timer(1000);
+    source.subscribe(t => {
+      this.refreshTasks();
     });
   }
 
-  onRowSelect() {
+  refreshTasks() {
+    this.tasks = [];
+    this.loadTasks();
+    this.msgsComponent.showInfo('Task list refreshed');
+    if (this.tasks.length > 0) {
+      this.selectedTaskUIData = this.tasksUIData[0];
+    }
+  }
+
+  editTask() {
     if (this.selectedTaskUIData) {
       this.taskDialog.taskComponent = this;
       this.taskDialog.selectedTaskUIData = this.selectedTaskUIData;
       this.setSelectProject(this.selectedTaskUIData.task.project);
       this.setSelectDeveloper(this.selectedTaskUIData.task.developer);
+      this.taskDialog.createDeveloperList();
+      this.taskDialog.createDeveloperList();
       this.displayDialog = true;
     }
   }
@@ -159,7 +188,6 @@ export class TasksComponent implements OnInit {
       _this.tasks.forEach(item => {
         _this.tasksUIData[index] = new TaskUIData();
         _this.tasksUIData[index].task = item;
-
         index++;
       });
     }
@@ -188,6 +216,9 @@ export class TasksComponent implements OnInit {
       });
     }
   }
+  setTaskDialog(taskDialog: TaskDialogComponent) {
+    this.taskDialog = taskDialog;
+  }
 
   showAddDialog() {
     this.taskDialog.init(this);
@@ -195,8 +226,11 @@ export class TasksComponent implements OnInit {
     this.taskDialog.selectedTaskUIData = new TaskUIData();
     this.taskDialog.showAddDialog();
   }
-  dialogChange(event) {
+  hideDialog(event) {
     this.displayDialog = event;
+  }
+  initDialog(event) {
+    console.log(event);
   }
 
   delete() {
@@ -209,4 +243,13 @@ export class TasksComponent implements OnInit {
       });
   }
 
+  dialogDataChanged(event) {
+    this.refreshTasks();
+  }
+  addConsumer(consumer: Consumer) {
+    this.consumers.push(consumer);
+  }
+  removeConsumer(consumer: Consumer) {
+    this.consumers = this.consumers.filter(item => item == consumer);
+  }
 }

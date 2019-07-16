@@ -5,10 +5,9 @@ import { CommonDataService } from './common-data.service';
 import { CommonData } from './common-data';
 import { SingleCommonData } from './single-common-data';
 import { MsgsComponent } from '../msgs/msgs.component';
-import { timer } from 'rxjs';
-import { Base } from '../Base';
-import { Dictionary } from '../Dictionary';
+import { timer, Observable } from 'rxjs';
 import { DropDownCommonData } from './dropdown-common-data'
+import { of } from "rxjs";
 
 @Component({
   selector: 'app-common-data',
@@ -82,14 +81,23 @@ export class CommonDataComponent implements OnInit {
     });
   }
 
-  refreshCommonData() {
+
+  refreshCommonData(): Observable<CommonData> {
+    var observerRef;
     this.commonDataService.getCommonData().subscribe(data => {
       if (data && data[0]) {
         this.commonData = data[0];
         this.loadeAllCommonData();
+        if (observerRef) {
+          observerRef.next(this.commonData);
+          observerRef.complete();
+        }
       } else {
         console.log("No Common Data found");
       }
+    });
+    return Observable.create(observer => {
+      observerRef = observer;
     });
   }
 

@@ -11,6 +11,7 @@ import { BaseService } from '../base-service';
 })
 export class ProjectsService extends BaseService {
 
+
   elasticType = "project";
 
   constructor(elasticService: ElasticsearchService) {
@@ -32,4 +33,16 @@ export class ProjectsService extends BaseService {
   getOpenProjects(): Observable<Project[]> {
     return this.getWithFieldValueInType(Project, "status", ["Open"]);
   }
+  getProjectsWithStatus(status): Observable<Project[]> {
+    return this.getWithFieldValueInType(Project, "status", [status]);
+  }
+
+  getNotClosedProjects(): Observable<Project[]> {
+    return this.getWithFieldValueNotInType(Project, 'status', ["Closed"]);
+  }
+
+  getProjectsForRelease(release: string) {
+    return this.getWithFieldValueInType(Project, "release", [release]);
+  }
+
 }

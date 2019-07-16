@@ -1,5 +1,5 @@
 <p-table #dt [columns]="columnsToDisplay" [value]="tasksUIData" selectionMode="single"
-  [(selection)]="selectedTaskUIData" [paginator]="true" [rows]="15" [resizableColumns]="true"
+  [(selection)]="selectedTaskUIData" [paginator]="true" [rows]="10" [resizableColumns]="true"
   *ngIf="developers && projects">
   <ng-template pTemplate="caption">
     <div style="text-align: right">
@@ -38,6 +38,11 @@
       <td>
         {{rowData.task.end_date | dateFormatPipe}}
       </td>
+
+      <td>
+        {{rowData.task.release}}
+      </td>
+
       <td>
         {{rowData.task.status}}
       </td>
@@ -51,17 +56,19 @@
   </ng-template>
   <ng-template pTemplate="summary" let-rowData>
     <div style="text-align:left">
-      <button type="button" pButton icon="fa fa-plus" (click)="showAddDialog()" label="Add New"></button>
-      <button type="button" pButton icon="fa fa-close" (click)="onRowSelect()" label="Edit"></button>
-      <button type="button" pButton icon="fa fa-close" class="ui-button-danger" (click)="delete()"
+      <button type="button" pButton icon="pi pi-plus" (click)="showAddDialog()" label="Add New"></button>
+      <button type="button" pButton icon="pi pi-pencil" (click)="editTask()" label="Edit"></button>
+      <button type="button" pButton icon="pi pi-times" class="ui-button-danger" (click)="delete()"
         label="Delete"></button>
     </div>
+    <a href="/release?release={{releaseParam}}">Release</a>
   </ng-template>
 </p-table>
 <div *ngIf="selectedTaskUIData && selectedTaskUIData.task" style="text-align:left">
   {{selectedTaskUIData.task.id}}
 </div>
-<app-task-dialog #taskDialog [visible]="displayDialog" (displayChange)="dialogChange($event)">
+<app-task-dialog #taskDialog [visible]="displayDialog" (displayChange)="hideDialog($event)"
+  (dataChangeEvent)='dialogDataChanged($event)' (openDialog)="initDialog($event)">
 </app-task-dialog>
 <!-- <p-dialog header="Task Details" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
   [style]="{width:'500px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"

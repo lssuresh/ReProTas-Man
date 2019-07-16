@@ -12,6 +12,7 @@ export class Task extends Base {
     // QA_DATE: Date;
     // UAT_DATE: Date;
     // PROD_DATE: Date;
+    release: string;
     status: string;
     comments: string;
     send_reminder: string;

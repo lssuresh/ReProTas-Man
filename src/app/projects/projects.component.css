@@ -53,3 +53,11 @@ table {
   overflow: scroll;
   max-height: 70%;
 }
+
+.clear-button{     
+    font-weight: bold;
+    color:black;
+    background-color:goldenrod;    
+    margin-bottom: 10px;  
+    border-spacing: 10px;
+}

@@ -15,7 +15,7 @@ export class ElasticsearchService {
 
   private client: Client;
 
-
+  DEFAULT_SIZE = 100;
 
   httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
@@ -50,6 +50,7 @@ export class ElasticsearchService {
     var observable = Observable.create((observer: Subscriber<any[]>) => {
       subscriberRef = observer;
     });
+    console.log("HTTP URL " + url);
     this.http.get(url).subscribe(response => this.processResponse(_type, response, subscriberRef));
     return observable;
   }
@@ -59,8 +60,10 @@ export class ElasticsearchService {
     var observable = Observable.create((observer: Subscriber<any[]>) => {
       subscriberRef = observer;
     });
-
+    console.log("HTTP POST " + url);
+    console.log("BODY " + body);
     this.http.post(url, body, this.httpOptions).subscribe(response => this.processResponse(_type, response, subscriberRef));
+     
     return observable;
   }
 
@@ -90,11 +93,11 @@ export class ElasticsearchService {
 
 
   getAllDocuments(elasticType, _type): Observable<any[]> {
-    return this.getDocumentsAsArray(_type, this.getSearchURL() + '?q=elasticType:' + elasticType + '&filter_path=hits.hits');
+    return this.getDocumentsAsArray(_type, this.getGetSearchURL() + '?q=elasticType:' + elasticType + '&filter_path=hits.hits&size=' + this.DEFAULT_SIZE);
   }
   getAllDocuments_OLD(_type, instanceType): Observable<any[]> {
     var outerObserver;
-    this.http.get(this.getSearchURL() + '?q=elasticType:' + _type + '&filter_path=hits.hits').subscribe(response => {
+    this.http.get(this.getGetSearchURL() + '?q=elasticType:' + _type + '&filter_path=hits.hits').subscribe(response => {
       console.log(JSON.stringify(response));
       if (response && response['hits'] && response['hits']['hits']) {
         outerObserver.next(response['hits']['hits'].map(item => ObjectFactory.createInstance(instanceType).deserialize(item._id,
@@ -126,7 +129,7 @@ export class ElasticsearchService {
       eq.addSearchFieldWithValues('elasticType', [_type.name]);
       eq.addSearchFieldWithValues(key, valueArr);
 
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
+      return this.postAndGetDocumentsAsArray(_type, this.getPOSTSearchURL(), eq.createQuery());
     } else {
       console.log("Invalid Params Name: " + name);
     }
@@ -136,8 +139,8 @@ export class ElasticsearchService {
     if (_type && name && valueArr) {
       var eq = new ElasticQuery();
       eq.addSearchFieldWithValues('elasticType', [_type.name]);
-      eq.addSearchFieldWithValues(name, valueArr);
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
+      eq.addSearchValuesNotIn(name, valueArr);
+      return this.postAndGetDocumentsAsArray(_type, this.getPOSTSearchURL(), eq.createQuery());
     } else {
       console.log("Invalid Params Name: " + name);
     }
@@ -149,7 +152,7 @@ export class ElasticsearchService {
       eq.addSearchFieldWithValues('elasticType', [_type.name]);
       eq.addSearchValuesNotIn(name, valueArr);
       eq.addRangeFilter(rangeField, rangeStart, rangeEnd);
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
+      return this.postAndGetDocumentsAsArray(_type, this.getPOSTSearchURL(), eq.createQuery());
     } else {
       console.log("Invalid Params Name: " + name);
     }
@@ -160,7 +163,7 @@ export class ElasticsearchService {
       eq.addSearchFieldWithValues('elasticType', [_type.name]);
       eq.addSearchFieldWithValues(name, valueArr);
       eq.addRangeFilter(rangeField, rangeStart, rangeEnd);
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
+      return this.postAndGetDocumentsAsArray(_type, this.getPOSTSearchURL(), eq.createQuery());
     } else {
       console.log("Invalid Params Name: " + name);
     }
@@ -175,7 +178,7 @@ export class ElasticsearchService {
       eq.addRangeFilterGT(rangeStartField, rangeStart);
       eq.addRangeFilterLT(rangeEndField, rangeEnd);
 
-      return this.postAndGetDocumentsAsArray(_type, this.getSearchURL(), eq.createQuery());
+      return this.postAndGetDocumentsAsArray(_type, this.getPOSTSearchURL(), eq.createQuery());
     } else {
       console.log("Invalid Params Name: " + name);
     }
@@ -213,7 +216,10 @@ export class ElasticsearchService {
   getURLWithURI(uri) {
     return this.getURL() + uri;
   }
-  getSearchURL() {
+  getPOSTSearchURL() {
+    return this.getURLWithURI('/_search?size=' + this.DEFAULT_SIZE);
+  }
+  getGetSearchURL() {
     return this.getURLWithURI('/_search');
   }
 

@@ -1,19 +1,48 @@
-<p-table [columns]="columnsToDisplay" [value]="projects" selectionMode="single" [(selection)]="selectedProject"
-    [paginator]="true" [rows]="15" [resizableColumns]="true">
-    <ng-template pTemplate="caption">
+<p-contextMenu [model]="menuItems" #tablecontextmenu></p-contextMenu>
+<p-table #dt [columns]="columnsToDisplay" [value]="projects" selectionMode="single" [(selection)]="selectedProject"
+    [paginator]="true" [rows]="15" [resizableColumns]="true" [contextMenu]="tablecontextmenu"
+    [(contextMenuSelection)]="selectedProject">
+    <ng-template pTemplate="caption" style="overflow:hidden">
         Projects
+        <button pButton type="button" class="clear-button" label="Clear Filters" style="position: absolute; right: 0;"
+            (click)="dt.filter('', 'name', 'in'); nameFilter='';
+            dt.filter('', 'application', 'in'); appFilter='';
+            dt.filter('', 'release', 'in'); releaseFilter='';
+            dt.filter('', 'PM', 'in'); PMFilter='';dt.filter('', 'status', 'in'); statusFilter='';"></button>
     </ng-template>
     <ng-template pTemplate="header" let-columns>
         <tr>
-            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn [ngSwitch]="col.field">
                 {{col.header}}
                 <p-sortIcon [field]="col.field"></p-sortIcon>
             </th>
         </tr>
-    </ng-template>
+        <tr>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                <input *ngSwitchCase="'name'" pInputText type="text"
+                    (input)="dt.filter($event.target.value, col.field, col.filterMatchMode)" [(ngModel)]="nameFilter">
+                <p-multiSelect *ngSwitchCase="'application'" [options]="commonDataComponent.applications.itemList"
+                    defaultLabel="All Apps" (onChange)="dt.filter($event.value, col.field, 'in')" appendTo="body"
+                    [(ngModel)]="appFilter">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'release'" [options]="commonDataComponent.releases.itemList"
+                    defaultLabel="All Releases" (onChange)="dt.filter($event.value, col.field, 'in')" appendTo="body"
+                    [(ngModel)]="releaseFilter">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'PM'" [options]="commonDataComponent.projectManagers.itemList"
+                    defaultLabel="All PMs" (onChange)="dt.filter($event.value, col.field, 'in')" appendTo="body"
+                    [(ngModel)]="PMFilter">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'status'" [options]="commonDataComponent.projectStatuses.itemList"
+                    defaultLabel="All Statuses" (onChange)="dt.filter($event.value, col.field, 'in')" appendTo="body"
+                    [(ngModel)]="statusFilter">
+                </p-multiSelect>
 
+            </th>
+        </tr>
+    </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
-        <tr [pSelectableRow]="rowData">
+        <tr [pSelectableRow]="rowData" [pContextMenuRow]="rowData">
             <td *ngFor="let col of columns" class="ui-resizable-column">
                 <span *ngIf='isDate(rowData[col.field]); else elseDateBlock'>
                     {{rowData[col.field] | date:'MM/dd/yyyy' : 'UTC' }}
@@ -28,12 +57,12 @@
     </ng-template>
     <ng-template pTemplate="summary" let-rowData>
         <div style="text-align:left">
-            <button type="button" pButton icon="fa fa-plus" (click)="showAddDialog()" label="Add New"></button>
-            <button type="button" pButton icon="fa fa-close" (click)="onRowSelect()" label="Edit"></button>
-            <button type="button" pButton icon="fa fa-close" class="ui-button-danger" (click)="delete()"
+            <button type="button" pButton icon="pi pi-plus" (click)="showAddDialog()" label="Add New"></button>
+            <button type="button" pButton icon="pi pi-pencil" (click)="editProject()" label="Edit"></button>
+            <button type="button" pButton icon="pi pi-times" class="ui-button-danger" (click)="delete()"
                 label="Delete"></button>
-
         </div>
+        <a href="/projects?status=Closed">Closed Projects</a>| <a href="/release?release={{releaseParam}}">Release</a>
     </ng-template>
 </p-table>
 <div *ngIf="selectedProject" style="text-align:left">
@@ -130,8 +159,9 @@
             </div>
         </div>
         <p-footer>
-            <div class="ui-dialog-buttonpane ui-helper-clearfix">
-                <button type="submit" pButton icon="fa fa-check" label="Save" [disabled]="!projectForm.valid"></button>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix"
+                *ngIf="selectedProject && selectedProject.status !='Closed'">
+                <button type="submit" pButton icon="pi pi-check" label="Save" [disabled]="!projectForm.valid"></button>
             </div>
         </p-footer>
 

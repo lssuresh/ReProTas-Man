@@ -19,6 +19,9 @@ export class TaskDialogComponent implements OnInit {
 
   @Input() visible: boolean = false;
   @Output() displayChange = new EventEmitter();
+  @Output() openDialog = new EventEmitter();
+  @Output() dataChangeEvent = new EventEmitter();
+
 
   selectedTaskUIData: TaskUIData;
   addTask: boolean;
@@ -103,11 +106,8 @@ export class TaskDialogComponent implements OnInit {
       this.tasksService.addTask(this.selectedTaskUIData.task).subscribe(
         data => {
           console.log(data);
-          // this.taskComponent.tasks.push(this.selectedTaskUIData.task);
-          // this.taskComponent.buildUIProjectData();
-          // this.taskComponent.buildUIDevData();
           this.msgsComponent.showInfo('Task data Saved!');
-          this.taskComponent.refreshTasks();
+          this.taskComponent.tasks.push(this.selectedTaskUIData.task);
         }
       );
     } else {
@@ -118,22 +118,25 @@ export class TaskDialogComponent implements OnInit {
         });
 
     }
-    this.taskComponent.refreshWithTimer();
     console.log("Updated ID" + this.selectedTaskUIData.task.id);
     this.addTask = null;
     this.visible = false;
+    this.dataChangeEvent.emit(this.selectedTaskUIData.task);
   }
 
 
   onClose() {
     this.visible = false;
+    this.addTask = false;
     this.displayChange.emit(false);
+  }
+  onOpen() {
+    this.openDialog.emit(this);
   }
   showAddDialog() {
     this.addTask = true;
   }
   hideDialog() {
-    this.taskComponent.refreshTasks();
     this.visible = false;
   }
 
