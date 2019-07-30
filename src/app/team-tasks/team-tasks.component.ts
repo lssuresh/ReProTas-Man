@@ -13,7 +13,8 @@ import { Consumer } from '../consumer';
 import { MenuItem, ConfirmationService } from 'primeng/api';
 import { TaskUIData } from '../tasks/TaskUIData';
 import { Developer } from '../developers/Developer';
-import { timer } from 'rxjs';
+import { timer, Observable, forkJoin } from 'rxjs';
+import { DevelopersService } from '../developers/developers.service';
 
 @Component({
   selector: 'app-team-tasks',
@@ -30,9 +31,12 @@ export class TeamTasksComponent implements OnInit, Consumer {
   weekEnd = "Friday";
   startDateKey = 'start_date';
   endDateKey = 'end_date';
+  firstColumnName = "Open";
 
   selectedTaskId: string;
   teamDevWeekTasks: DevWeekTasks[];
+  developers: Developer[];
+
   weeks: string[];
   weekDates: Map<string, any>;
   newTask: string;
@@ -47,9 +51,10 @@ export class TeamTasksComponent implements OnInit, Consumer {
   selectedWeek: string;
   selectedTask: Task;
 
-  constructor(private tasksService: TasksService, private developerComponent: DevelopersComponent,
-    private msgsComponent: MsgsComponent, private tasksComponent: TasksComponent, private confirmationService: ConfirmationService) {
-    this.developerComponent.addConsumer(this);
+  constructor(private tasksService: TasksService,
+    private msgsComponent: MsgsComponent, private tasksComponent: TasksComponent,
+    private confirmationService: ConfirmationService, private developerService: DevelopersService) {
+    //this.developerComponent.addConsumer(this);
     this.resetSessionData();
     //this.tasksComponent.refreshTasks();
     this.refreshViewData();
@@ -70,28 +75,61 @@ export class TeamTasksComponent implements OnInit, Consumer {
 
 
   refreshViewData() {
-    //subtract current date by weekstart range and find the weekStart Day and get date.
-    let rangeStartMoment = moment().subtract(this.weekStartRange, 'w').day(this.weekStart);
-    var rangeStart = rangeStartMoment.startOf('day').toDate();
 
-    let rangeEndMoment = moment().add(this.weekEndRange, 'w').day(this.weekEnd);
-    var rangeEnd = rangeEndMoment.toDate();
+    var observerables = [];
 
-    this.tasksService.getOpenTasksBetweenDates(rangeStart, rangeEnd).subscribe(tasks => {
+    //observerables[0] = this.tasksService.getOpenTasksBetweenDates(rangeStart, rangeEnd);
+    observerables[0] = this.tasksService.getOpenTasks();
+    observerables[1] = this.developerService.getActiveDevelopers();
+
+    forkJoin(observerables).subscribe(tasksArr => {
       this.teamDevWeekTasks = [];
-      this.tasks = tasks;
-      var _this = this;
-      if (tasks) {
-        this.rebuildUI();
+      this.tasks = [];
+
+      if (tasksArr[0]) {
+        this.tasks = this.tasks.concat(...tasksArr[0]);
       }
-      this.constructColumns();
-      if ((!this.developerComponent.getDeveloperList()) || this.developerComponent.getDeveloperList().length == 0) {
-        this.developerComponent.refreshDevelopers();
-      } else {
+      if (tasksArr[3]) {
+        this.tasks = this.tasks.concat(...tasksArr[1]);
+      }
+      if (tasksArr[1]) {
+        this.developers = tasksArr[1];
+        this.createBlankOpenTaskForAllDev();
+      }
+
+      var _this = this;
+
+      if (this.tasks) {
+        this.rebuildUI();
         this.refreshDevNames();
+      }
+
+      this.constructColumns();
+
+    });
+  }
+  createBlankOpenTaskForAllDev() {
+    //Create prime data, old task column for all developers     
+    var tasks = [];
+    this.developers.forEach(item => {
+      var task = new Task();
+      task.developer = item.name;
+      tasks.push(task);
+    });
+  }
+  rebuildUIForTasks(openTasks: Task[]) {
+    openTasks.forEach(taskItem => {
+      var devWeekTasks = this.getDevWeekTasks(taskItem.developer);
+      if (devWeekTasks) {
+        devWeekTasks.addTaskForWeek(this.firstColumnName, taskItem);
+      } else {
+        devWeekTasks = new DevWeekTasks(taskItem.developer);
+        this.teamDevWeekTasks.push(devWeekTasks);
+        devWeekTasks.addTaskForWeek(this.firstColumnName, taskItem);
       }
     });
   }
+
   getDevWeekTasks(developer: string): DevWeekTasks {
     var devWeekTasks = this.teamDevWeekTasks.filter(item => item.devName == developer);
     if (devWeekTasks && devWeekTasks.length > 0) {
@@ -101,7 +139,7 @@ export class TeamTasksComponent implements OnInit, Consumer {
 
   resetSessionData() {
     this.weekDates = new Map<string, any>();
-    this.columnsToDisplay = [{ field: 'devName', header: 'Developer' }];
+    this.columnsToDisplay = [{ field: 'devName', header: 'Developer' }, { field: this.firstColumnName, header: this.firstColumnName }];
     this.teamDevWeekTasks = [];
     this.weeks = [];
     this.selectedTask = new Task();
@@ -110,40 +148,55 @@ export class TeamTasksComponent implements OnInit, Consumer {
     this.selectedWeek = "";
   }
 
+  // re-lays out the tasks into matrix data by putting appropriate task in 
+  // right index for developer
   rebuildUI() {
-    var index = 0;
     this.resetSessionData();
+
+    //subtract current date by weekstart range and find the weekStart Day and get date.
+    let rangeStartMoment = moment().subtract(this.weekStartRange, 'w').day(this.weekStart);
+    var rangeStart = rangeStartMoment.startOf('day');
+
+    let rangeEndMoment = moment().add(this.weekEndRange, 'w').day(this.weekEnd);
+    var rangeEnd = rangeEndMoment.endOf('day');
 
     this.tasks.forEach(taskItem => {
       var devWeekTasks = this.getDevWeekTasks(taskItem.developer);
-      var weekNum = moment(taskItem.start_date).format('W');
-      var weekLbl = this.getWeekLabel(weekNum);
-      this.weekDates.set(weekLbl, {
-        [this.startDateKey]: moment().day(this.weekStart).week(+weekNum).toDate(),
-        [this.endDateKey]: moment().day(this.weekEnd).week(+weekNum).toDate()
-      });
+      var weekLbl = this.firstColumnName;
+
+      // we add ot the week label only if its within our range
+      // else we show in common label as OPEN
+      if (taskItem.start_date && moment(taskItem.start_date).isAfter(rangeStart)) {
+        var weekNum = moment(taskItem.start_date).format('W');
+        weekLbl = this.getWeekLabel(weekNum);
+        this.weekDates.set(weekLbl, {
+          [this.startDateKey]: moment().day(this.weekStart).week(+weekNum).toDate(),
+          [this.endDateKey]: moment().day(this.weekEnd).week(+weekNum).toDate()
+        });
+      }
 
       this.weeks.indexOf(weekLbl) == -1 ? this.weeks.push(weekLbl) : console.log('Week index already present ' + weekLbl);
       if (devWeekTasks) {
         devWeekTasks.addTaskForWeek(weekLbl, taskItem);
       } else {
         devWeekTasks = new DevWeekTasks(taskItem.developer);
-        this.teamDevWeekTasks[index] = devWeekTasks;
+        this.teamDevWeekTasks.push(devWeekTasks);
         devWeekTasks.addTaskForWeek(weekLbl, taskItem);
-        index++;
       }
     });
 
-    this.refreshDevNames();
   }
 
   constructColumns() {
     if (this.weeks) {
       this.weeks.sort();
+      //this.columnsToDisplay.push({ field: this.firstColumnName, header: this.firstColumnName });
       this.weeks.forEach(item => {
-        var startDate = moment(this.weekDates.get(item)[this.startDateKey]).format(this.dateFormat);
-        var endDate = moment(this.weekDates.get(item)[this.endDateKey]).format(this.dateFormat);
-        this.columnsToDisplay.push({ field: 'weekTask.get(' + item + ')', header: item + '  (' + startDate + ')' });
+        if (item != this.firstColumnName) {
+          var startDate = moment(this.weekDates.get(item)[this.startDateKey]).format(this.dateFormat);
+          var endDate = moment(this.weekDates.get(item)[this.endDateKey]).format(this.dateFormat);
+          this.columnsToDisplay.push({ field: 'weekTask.get(' + item + ')', header: item + '  (' + startDate + ')' });
+        }
       });
     }
   }
@@ -170,12 +223,24 @@ export class TeamTasksComponent implements OnInit, Consumer {
   }
   refreshDevNames() {
     this.teamDevWeekTasks.forEach(item => {
-      var devname = this.developerComponent.getDevName(item.devName);
+      var devname = this.getDevNameForId(item.devName);
       if (devname) {
         item.devName = devname;
       }
     });
   }
+
+  getDevNameForId(id: string): string {
+    var name = "";
+    this.developers.forEach(item => {
+      if (item.id == id) {
+        name = item.name;
+        return;
+      }
+    });
+    return name;
+  }
+
 
   saveTask(devName: string, week: string, taskIndex: number) {
     if (!this.newTask || this.newTask.trim().length == 0) {
@@ -200,7 +265,7 @@ export class TeamTasksComponent implements OnInit, Consumer {
       task = this.selectedTask;
     } else {
       task = new Task();
-      task.developer = this.developerComponent.getDevId(devName);
+      task.developer = this.getDevId(devName);
       task.start_date = moment(this.weekDates.get(week)[this.startDateKey]).toDate();
       tasks.push(task);
     }
@@ -213,7 +278,7 @@ export class TeamTasksComponent implements OnInit, Consumer {
     weekTasks.set(week, tasks);
     this.newTask = '';
     this.tasksService.addOrUpdate(task).subscribe(item => {
-      this.msgsComponent.showInfo('Task update/added' + item);
+      this.msgsComponent.showInfo('Task update/added' + item.name);
     });
   }
 
@@ -273,17 +338,15 @@ export class TeamTasksComponent implements OnInit, Consumer {
   dialogDataChanged(event) {
     if (!event.id) {
       this.tasks.push(event);
-      this.refreshWithTimer();
     }
+    this.refreshWithTimer();
   }
 
   showAddDialog(): void {
     var taskUIData = new TaskUIData();
-    //taskUIData.task = this.selectedTask;
     this.tasksComponent.selectedTaskUIData = taskUIData;
     this.selectedTask = new Task();
     this.tasksComponent.displayDialog = true;
-    //this.tasksComponent.editTask();
   }
 
   deleteTask() {
@@ -295,7 +358,7 @@ export class TeamTasksComponent implements OnInit, Consumer {
       message: 'Are you sure that you want to delete task <br>' + this.selectedTask.name + '?',
       accept: () => {
         this.tasksService.deleteTask(this.selectedTask).subscribe(item => {
-          this.msgsComponent.showInfo('Task deleted ' + item);
+          this.msgsComponent.showInfo('Task deleted ' + item.name);
           this.tasks = this.tasks.filter(item => item.name != this.selectedTask.name);
           this.refreshWithTimer();
         });
@@ -309,6 +372,14 @@ export class TeamTasksComponent implements OnInit, Consumer {
     source.subscribe(t => {
       this.refreshViewData();
     });
+  }
+
+  getDevId(devName: string): string {
+    var devWithName = this.developers.filter(item => item.name == devName);
+    if (devWithName && devWithName.length > 0) {
+      return devWithName[0].id;
+    }
+    return "";
   }
 
 }

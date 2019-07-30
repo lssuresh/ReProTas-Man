@@ -10,8 +10,12 @@
   </ng-template>
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn [ngSwitch]="col.field">
         {{col.header}}
+        <p-multiSelect *ngSwitchCase="'task.status'" [options]="commonDataComponent.taskStatuses.itemList"
+          defaultLabel="All" (onChange)="dt.filter($event.value, col.field, 'in')" appendTo="body"
+          [(ngModel)]="statusFilter">
+        </p-multiSelect>
         <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
     </tr>

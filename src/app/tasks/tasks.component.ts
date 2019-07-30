@@ -39,7 +39,8 @@ export class TasksComponent implements OnInit, Producer {
   consumers = [];
 
   taskParam: string;
-  releaseParam:string;
+  releaseParam: string;
+  developerParam: string;
 
   @ViewChild('taskDialog') taskDialog: TaskDialogComponent;
 
@@ -66,6 +67,11 @@ export class TasksComponent implements OnInit, Producer {
     private commonDataComponent: CommonDataComponent,
     private projectService: ProjectsService,
     private developersService: DevelopersService) {
+    this.route.queryParams.subscribe(params => {
+      this.taskParam = params['task'];
+      this.releaseParam = params['releaseNode'];
+      this.developerParam = params['developer']
+    });
     this.developers = [];
     this.projects = [];
     this.tasks = [];
@@ -74,10 +80,7 @@ export class TasksComponent implements OnInit, Producer {
     this.refreshTasks();
     this.commonDataComponent.refreshCommonData();
     this.reset(null);
-    this.route.queryParams.subscribe(params => {
-      this.taskParam = params['task'];
-      this.releaseParam = params['releaseNode'];
-    });
+
   }
 
   ngOnInit() {
@@ -96,20 +99,38 @@ export class TasksComponent implements OnInit, Producer {
     });
   }
   loadTasks() {
-    this.tasksService.loadTasks().subscribe(tasks => {
-      console.log("Retrieved Tasks ===>" + tasks);
-      tasks.sort((a, b) => {
-        if (a.name < b.name) return -1;
-        else if (a.name > b.name) return 1;
-        else return 0;
-      });
-      this.tasks = tasks;
-      this.buildUITaskData();
-      this.buildUIDevData();
-      this.buildUIProjectData();
-      this.setSelectedTaskUIData()
-      this.consumers.forEach(item => item.consume(Task, this.tasks));
+    if (this.developerParam) {
+      if (this.developers && this.developers.length > 0) {
+        var dev = this.developers.filter(item => item.name == this.developerParam);
+        if (dev && dev.length > 0) {
+          this.tasksService.getTasksForDev(dev[0].id).subscribe(tasks => this.displayTasks(tasks));
+        } else {
+          this.msgsComponent.showError("Invalid dev name");
+        }
+      } else {
+        this.developersService.getDeveloperWithName(this.developerParam).subscribe(developer => {
+          if (developer) {
+            this.tasksService.getTasksForDev(developer[0].id).subscribe(tasks => this.displayTasks(tasks));
+          }
+        });
+      }
+    } else {
+      this.tasksService.loadTasks().subscribe(tasks => this.displayTasks(tasks));
+    }
+  }
+  displayTasks(tasks: Task[]) {
+    console.log("Retrieved Tasks ===>" + tasks);
+    tasks.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      else if (a.name > b.name) return 1;
+      else return 0;
     });
+    this.tasks = tasks;
+    this.buildUITaskData();
+    this.buildUIDevData();
+    this.buildUIProjectData();
+    this.setSelectedTaskUIData()
+    this.consumers.forEach(item => item.consume(Task, this.tasks));
   }
   setSelectedTaskUIData() {
     if (this.taskParam) {
@@ -226,6 +247,15 @@ export class TasksComponent implements OnInit, Producer {
     this.taskDialog.selectedTaskUIData = new TaskUIData();
     this.taskDialog.showAddDialog();
   }
+  showAddDialogWithDateAndDev(start_date: Date, dev: string) {
+    this.taskDialog.init(this);
+    this.displayDialog = true;
+    this.taskDialog.selectedTaskUIData = new TaskUIData();
+    this.taskDialog.selectedTaskUIData.task.start_date = start_date;
+    this.taskDialog.selectedTaskUIData.task.developer = dev;
+    this.taskDialog.showAddDialog();
+  }
+
   hideDialog(event) {
     this.displayDialog = event;
   }
@@ -244,7 +274,16 @@ export class TasksComponent implements OnInit, Producer {
   }
 
   dialogDataChanged(event) {
-    this.refreshTasks();
+    if (!event.id) {
+      this.tasks.push(event);
+    } else {
+      var updatedTask = this.tasks.filter(item => item.id == event.id);
+      if (updatedTask && updatedTask.length > 0) {
+        updatedTask[0].name = event.name;
+      }
+    }
+    this.refreshWithTimer();
+
   }
   addConsumer(consumer: Consumer) {
     this.consumers.push(consumer);

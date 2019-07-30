@@ -1,5 +1,6 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { MessageService } from 'primeng/components/common/messageservice';
+import { timer } from 'rxjs/internal/observable/timer';
 
 
 @Component({
@@ -32,6 +33,8 @@ export class MsgsComponent implements OnInit {
       severity: 'Info', summary: 'Info',
       detail: msg
     });
+
+    this.clearWithTimer();
   }
 
   showWarn(msg) {
@@ -40,10 +43,17 @@ export class MsgsComponent implements OnInit {
       severity: 'warn', summary: 'Warn',
       detail: msg
     });
+    this.clearWithTimer();
   }
   clear() {
     this.messageService.clear();
   }
 
+  clearWithTimer() {
+    let source = timer(2000);
+    source.subscribe(t => {
+      this.clear();
+    });
+  }
 
 }

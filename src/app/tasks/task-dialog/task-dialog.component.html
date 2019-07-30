@@ -47,8 +47,8 @@
           <label for="project">Project</label>
         </div>
         <div class="ui-g-8 ui-dropdown-item">
-          <p-dropdown [options]="projectDisplayList" [filter]="true" (onChange)="setSelectProject($event.value)"
-            name="project" placeholder="Select Project" [dataKey]="code" [(ngModel)]="selectedTaskUIData.task.project">
+          <p-dropdown [options]="projectDisplayList" (onChange)="setSelectProject($event.value)" name="project"
+            placeholder="Select Project" [dataKey]="code" [(ngModel)]="selectedTaskUIData.task.project">
           </p-dropdown>
         </div>
       </div>

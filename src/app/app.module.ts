@@ -36,6 +36,9 @@ import { TeamTasksComponent } from './team-tasks/team-tasks.component';
 import { TaskDialogComponent } from './tasks/task-dialog/task-dialog.component';
 import { ReleaseComponent } from './release/release.component'
 import { TreeModule } from 'primeng/tree';
+import { FullCalendarModule } from 'primeng/fullcalendar';
+import { TaskCalendarComponent } from './task-calendar/task-calendar.component';
+import { TabMenuModule } from 'primeng/tabmenu';
 
 @NgModule({
   declarations: [
@@ -48,7 +51,8 @@ import { TreeModule } from 'primeng/tree';
     TasksComponent,
     TeamTasksComponent,
     TaskDialogComponent,
-    ReleaseComponent
+    ReleaseComponent,
+    TaskCalendarComponent
   ],
   imports: [
     BrowserModule,
@@ -75,7 +79,9 @@ import { TreeModule } from 'primeng/tree';
     ProgressBarModule,
     ContextMenuModule,
     ConfirmDialogModule,
-    TreeModule
+    TreeModule,
+    FullCalendarModule,
+    TabMenuModule
   ],
   providers: [MessageService, ConfirmationService],
   bootstrap: [AppComponent]

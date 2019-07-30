@@ -1,7 +1,8 @@
 <div style="text-align:center">
   <h1>
-   {{ title }}
+    {{ title }}
   </h1>
-<app-msgs></app-msgs>
-<router-outlet></router-outlet>  
+  <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
+  <router-outlet></router-outlet>
+  <app-msgs></app-msgs>
 </div>

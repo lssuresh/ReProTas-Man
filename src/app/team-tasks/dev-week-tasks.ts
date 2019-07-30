@@ -7,6 +7,7 @@ export class DevWeekTasks {
     weekTask: Map<string, Task[]> = new Map<string, Task[]>();
     maxTasks: number;
 
+    // this is used to iterate in UI to paint max rows for this dev.
     maxTaskArrayPlaceHolder;
 
     static MAX_TASKS: number = 5;

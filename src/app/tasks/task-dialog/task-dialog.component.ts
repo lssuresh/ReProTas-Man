@@ -54,11 +54,11 @@ export class TaskDialogComponent implements OnInit {
   }
 
   createDeveloperList() {
-    this.developerDisplayList = [];
+    this.developerDisplayList = [{ label: '', value: '' }];
     this.taskComponent.developers.forEach(item => this.developerDisplayList.push({ label: item.name, value: item.id }))
   }
   createProjectsList() {
-    this.projectDisplayList = [];
+    this.projectDisplayList = [{ label: '', value: '' }];
     this.taskComponent.projects.forEach(item => this.projectDisplayList.push({ label: item.name, value: item.id }))
   }
 

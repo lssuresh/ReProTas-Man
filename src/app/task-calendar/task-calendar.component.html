@@ -1,0 +1,7 @@
+<app-task-dialog #taskAddDialog [visible]="tasksComponent.displayDialog"
+  (displayChange)="tasksComponent.hideDialog($event)" (openDialog)="initDialog($event)"
+  (dataChangeEvent)='dialogDataChanged($event)'>
+</app-task-dialog>
+
+
+<p-fullCalendar (dateClick)="onDateSelect($event)" [events]="calendarTasks" [options]="options">

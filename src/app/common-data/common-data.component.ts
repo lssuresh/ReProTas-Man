@@ -125,6 +125,8 @@ export class CommonDataComponent implements OnInit {
   createSelectItems(items: string[]) {
     var selectedItems = [];
     if (items) {
+      // add a blank item at the top of the list
+      //selectedItems = [...selectedItems, { label: '', value: '' }];
       items.forEach(item => {
         selectedItems = [...selectedItems, { label: item, value: item }];
       });

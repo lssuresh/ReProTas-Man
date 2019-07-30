@@ -42,10 +42,10 @@ export class TasksService extends BaseService {
       return this.updateTask(task);
     }
   }
-  getOpenTasks() {
+  getOpenTasks(): Observable<Task[]> {
     return this.elasticService.matchNotInValue(Task, "status", ["Closed"]);
   }
-  getOpenTasksBetweenDates(rangeStart: Date, rangeEnd: Date) {
+  getOpenTasksBetweenDates(rangeStart: Date, rangeEnd: Date): Observable<Task[]> {
     return this.elasticService.matchNotInValueAndRange(Task, "status", ["Closed"], 'start_date', rangeStart, rangeEnd)
   }
 
@@ -53,4 +53,7 @@ export class TasksService extends BaseService {
     return this.elasticService.matchValue(Task, "release", [release]);
   }
 
+  getTasksForDev(developerId) {
+    return this.elasticService.matchValue(Task, "developer", [developerId]);
+  }
 }
