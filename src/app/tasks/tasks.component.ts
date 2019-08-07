@@ -4,16 +4,15 @@ import { CommonDataComponent } from '../common-data/common-data.component';
 import { MsgsComponent } from '../msgs/msgs.component';
 import { TasksService } from './tasks.service';
 import { Task } from './task';
-import { timer } from 'rxjs';
+import { timer, BehaviorSubject } from 'rxjs';
 import { Project } from '../projects/Project'
 import { Developer } from '../developers/Developer';
 import { ProjectsService } from '../projects/projects.service';
 import { DevelopersService } from '../developers/developers.service';
 import { TaskUIData } from './TaskUIData';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
-import { Producer } from '../producer';
-import { Consumer } from '../consumer';
 import { ActivatedRoute } from '@angular/router';
+import { LocalStorageService } from 'angular-web-storage';
 
 
 @Component({
@@ -21,7 +20,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.css']
 })
-export class TasksComponent implements OnInit, Producer {
+export class TasksComponent implements OnInit {
 
 
   DEFAULT_DISPLAY_VAL = "#NAV"
@@ -38,9 +37,11 @@ export class TasksComponent implements OnInit, Producer {
 
   consumers = [];
 
+  taskParamSubject;
   taskParam: string;
   releaseParam: string;
   developerParam: string;
+  allTasks: boolean
 
   @ViewChild('taskDialog') taskDialog: TaskDialogComponent;
 
@@ -66,12 +67,18 @@ export class TasksComponent implements OnInit, Producer {
     private msgsComponent: MsgsComponent,
     private commonDataComponent: CommonDataComponent,
     private projectService: ProjectsService,
-    private developersService: DevelopersService) {
+    private developersService: DevelopersService, private localStorage: LocalStorageService) {
+
+    this.developerParam = localStorage.get('developer');
     this.route.queryParams.subscribe(params => {
-      this.taskParam = params['task'];
       this.releaseParam = params['releaseNode'];
-      this.developerParam = params['developer']
+      if (params['task'] && this.taskParam != params['task']) {
+        this.taskParam = params['task'];
+        this.refreshTasks();
+      }
+
     });
+
     this.developers = [];
     this.projects = [];
     this.tasks = [];
@@ -80,10 +87,10 @@ export class TasksComponent implements OnInit, Producer {
     this.refreshTasks();
     this.commonDataComponent.refreshCommonData();
     this.reset(null);
-
   }
 
   ngOnInit() {
+    console.log("test");
   }
 
   loadProjects() {
@@ -99,7 +106,7 @@ export class TasksComponent implements OnInit, Producer {
     });
   }
   loadTasks() {
-    if (this.developerParam) {
+    if (this.developerParam && this.taskParam != "All") {
       if (this.developers && this.developers.length > 0) {
         var dev = this.developers.filter(item => item.name == this.developerParam);
         if (dev && dev.length > 0) {
@@ -284,11 +291,5 @@ export class TasksComponent implements OnInit, Producer {
     }
     this.refreshWithTimer();
 
-  }
-  addConsumer(consumer: Consumer) {
-    this.consumers.push(consumer);
-  }
-  removeConsumer(consumer: Consumer) {
-    this.consumers = this.consumers.filter(item => item == consumer);
   }
 }

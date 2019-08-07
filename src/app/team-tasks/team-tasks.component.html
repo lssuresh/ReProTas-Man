@@ -33,7 +33,8 @@
         (mouseup)="onRowSelect($event, rowData.devName, col, taskIndex)">
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <input pInputText type="text" [(ngModel)]="newTask" (focusin)="editTask(rowData.devName, col, taskIndex)"
+            <input pInputText type="text" [(ngModel)]="newTask"
+              (focusin)="editTaskInline(rowData.devName, col, taskIndex)"
               (keydown.enter)="saveTask(rowData.devName, col, taskIndex)">
           </ng-template>
           <ng-template pTemplate="output">

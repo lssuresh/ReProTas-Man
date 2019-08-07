@@ -6,21 +6,21 @@
     <div class="ui-g ui-fluid" *ngIf="selectedTaskUIData">
       <div class="ui-g-12">
         <div class="ui-g-4">
-          <label for="mobile">Developer</label>
+          <label for="mobile">*Developer</label>
         </div>
         <div class="ui-g-8 ui-dropdown-item">
           <p-dropdown [options]="developerDisplayList" [filter]="true" (onChange)="setSelectDeveloper($event.value)"
             name="developer" placeholder="Select Developer" [selectId]="selectedDeveloper.name"
-            [(ngModel)]="selectedTaskUIData.task.developer">
+            [(ngModel)]="selectedTaskUIData.task.developer" required="true">
           </p-dropdown>
         </div>
       </div>
       <div class="ui-g-12">
         <div class="ui-g-4">
-          <label for="Name">Name</label>
+          <label for="Name">*Name</label>
         </div>
         <div class="ui-g-8">
-          <input pInputText id="name" [(ngModel)]="selectedTaskUIData.task.name" name="name" />
+          <input pInputText id="name" [(ngModel)]="selectedTaskUIData.task.name" name="name" required="true" />
         </div>
       </div>
       <div class="ui-g-12">

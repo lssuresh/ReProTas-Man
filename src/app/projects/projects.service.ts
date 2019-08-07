@@ -4,17 +4,17 @@ import { Observable, of } from 'rxjs';
 import { Project } from './Project';
 import { ElasticsearchService } from '../elasticsearch.service';
 import { BaseService } from '../base-service';
+import { LocalStorageService } from 'angular-web-storage';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectsService extends BaseService {
-
-
+  
   elasticType = "project";
 
-  constructor(elasticService: ElasticsearchService) {
+  constructor(elasticService: ElasticsearchService, localStorage: LocalStorageService) {
     super(elasticService);
   }
 
@@ -22,12 +22,14 @@ export class ProjectsService extends BaseService {
     return this.elasticService.getAllDocuments(Project.name, Project);
   }
   addProject(project: Project): Observable<Project> {
+    this.setAuditData(project);
     return this.elasticService.addDocument(project);
   }
   deleteProject(project: Project): Observable<Project> {
     return this.elasticService.deleteDocument(project);
   }
   updateProject(project: Project): Observable<Project> {
+    this.setAuditData(project);
     return this.elasticService.updateDocument(project);
   }
   getOpenProjects(): Observable<Project[]> {

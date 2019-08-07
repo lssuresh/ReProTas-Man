@@ -5,10 +5,8 @@ import { DevelopersService } from './developers.service';
 import { Developer } from './Developer';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MsgsComponent } from '../msgs/msgs.component';
-import { timer } from 'rxjs';
+import { timer, Subject } from 'rxjs';
 import { ObjectFactory } from '../ObjectFactory';
-import { Producer } from '../producer';
-import { Consumer } from '../consumer';
 
 @Component({
   selector: 'app-developers',
@@ -16,7 +14,7 @@ import { Consumer } from '../consumer';
   styleUrls: ['./developers.component.css']
 })
 @Injectable()
-export class DevelopersComponent implements OnInit, Producer {
+export class DevelopersComponent implements OnInit {
 
   developers: Developer[];
 
@@ -32,10 +30,11 @@ export class DevelopersComponent implements OnInit, Producer {
 
   selectedRelease: string;
 
-  consumerList: Consumer[];
+  developerListSubject: Subject<Developer[]>;
 
   columnsToDisplay: any[] = [
     { field: 'name', header: 'Name' },
+    { field: 'userId', header: 'User Id' },
     { field: 'phone', header: 'Home Phone' },
     { field: 'mobile', header: 'Mobile' },
     { field: 'email', header: 'Email' },
@@ -47,8 +46,9 @@ export class DevelopersComponent implements OnInit, Producer {
 
   constructor(private pfb: FormBuilder, private developerService: DevelopersService,
     private msgsComponent: MsgsComponent, private commonDataComponent: CommonDataComponent) {
-    this.consumerList = [];
     this.developers = [];
+    this.developerListSubject = new Subject();
+    this.developerListSubject.next(this.developers);
   }
 
   ngOnInit() {
@@ -78,7 +78,8 @@ export class DevelopersComponent implements OnInit, Producer {
       if (developers.length > 0) {
         this.selectedDeveloper = this.developers[0];
       }
-      this.consumerList.forEach(item => item.consume(Developer, this.developers));
+
+      this.developerListSubject.next(this.developers);
     });
   }
 
@@ -86,6 +87,9 @@ export class DevelopersComponent implements OnInit, Producer {
     this.developerForm = this.pfb.group({
       'id': new FormControl(''),
       'elasticType': new FormControl(''),
+      'userId': new FormControl('', Validators.required),
+      'updated_by': new FormControl(''),
+      'updated_date': new FormControl(''),
       'name': new FormControl('', Validators.required),
       'phone': new FormControl('', Validators.required),
       'mobile': new FormControl('', Validators.required),
@@ -141,6 +145,7 @@ export class DevelopersComponent implements OnInit, Producer {
   onRowSelect() {
     if (this.selectedDeveloper) {
       this.addDeveloper = false;
+      this.selectedDeveloper.userId = 'Test';
       this.newDeveloper = ObjectFactory.createNewTypeFrom(this.selectedDeveloper, Developer);
       (<FormGroup>this.developerForm).setValue(this.selectedDeveloper, { onlySelf: true });
       this.displayDialog = true;
@@ -165,10 +170,4 @@ export class DevelopersComponent implements OnInit, Producer {
     return val instanceof Date;
   }
 
-  addConsumer(consumer: Consumer) {
-    this.consumerList.push(consumer);
-  }
-  removeConsumer(consumer: Consumer) {
-    this.consumerList = this.consumerList.filter(item => item != consumer);
-  }
 }

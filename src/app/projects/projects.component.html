@@ -75,15 +75,15 @@
         <div class="ui-g ui-fluid" *ngIf="newProject">
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="Name">Name</label>
+                    <label for="Name">*Name</label>
                 </div>
                 <div class="ui-g-8">
-                    <input pInputText id="name" formControlName="name" />
+                    <input pInputText id="name" formControlName="name" required="true" />
                 </div>
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="desc">Desc</label>
+                    <label for="desc">*Desc</label>
                 </div>
                 <div class="ui-g-8">
                     <textarea [rows]="3" [cols]="25" pInputTextarea id="desc" formControlName="desc"
@@ -92,7 +92,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="desc">Application</label>
+                    <label for="desc">*Application</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item">
                     <p-dropdown [options]="commonDataComponent.applications.itemList" placeholder="Select App"
@@ -101,7 +101,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="PM">PM</label>
+                    <label for="PM">*PM</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item">
                     <p-dropdown [options]="commonDataComponent.projectManagers.itemList" placeholder="Select PM"
@@ -111,7 +111,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="brand">QA Date</label>
+                    <label for="brand">*QA Date</label>
                 </div>
                 <div class="ui-g-8">
                     <p-calendar formControlName="QA_DATE" [showIcon]="true" [monthNavigator]="true"
@@ -121,7 +121,7 @@
 
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="brand">UAT Date</label>
+                    <label for="brand">*UAT Date</label>
                 </div>
                 <div class="ui-g-8">
                     <p-calendar formControlName="UAT_DATE" [showIcon]="true" [showIcon]="true" [monthNavigator]="true"
@@ -130,7 +130,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="PROD_DATE">PROD Date</label>
+                    <label for="PROD_DATE">*PROD Date</label>
                 </div>
                 <div class="ui-g-8">
                     <p-calendar formControlName="PROD_DATE" [showIcon]="true" [showIcon]="true" [monthNavigator]="true"
@@ -139,7 +139,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="release">Release</label>
+                    <label for="release">*Release</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item">
 
@@ -150,7 +150,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="status">Status</label>
+                    <label for="status">*Status</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item">
                     <p-dropdown [options]="commonDataComponent.projectStatuses.itemList" placeholder="Select Status"

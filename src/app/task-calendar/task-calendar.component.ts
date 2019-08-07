@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonDataComponent } from '../common-data/common-data.component';
+
 import { MsgsComponent } from '../msgs/msgs.component';
 import { TasksService } from '../tasks/tasks.service';
 import { ActivatedRoute } from '@angular/router';
@@ -10,6 +10,7 @@ import { TaskUIData } from '../tasks/TaskUIData';
 
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { LocalStorageService } from 'angular-web-storage';
 
 
 @Component({
@@ -23,7 +24,7 @@ export class TaskCalendarComponent implements OnInit {
 
   calendarTasks: any[];
 
-  devName;
+  developer;
   devId;
   selectedDate: Date;
 
@@ -33,12 +34,9 @@ export class TaskCalendarComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private tasksService: TasksService,
     private msgsComponent: MsgsComponent,
-    private commonDataComponent: CommonDataComponent,
     private developerService: DevelopersService,
-    private tasksComponent: TasksComponent) {
-    this.route.queryParams.subscribe(params => {
-      this.devName = params['developer'];
-    });
+    private tasksComponent: TasksComponent, private localStorage: LocalStorageService) {
+    this.developer = localStorage.get('user');
   }
 
   ngOnInit() {
@@ -66,8 +64,8 @@ export class TaskCalendarComponent implements OnInit {
     }
   }
   refreshData() {
-    if (this.devName) {
-      this.developerService.getDeveloperWithName(this.devName).subscribe(developer => {
+    if (this.developer) {
+      this.developerService.getDeveloperWithName(this.developer).subscribe(developer => {
         if (developer && developer[0]) {
           this.devId = developer[0].id;
           this.tasksService.getTasksForDev(developer[0].id).subscribe(tasks => this.displayTasks(tasks));

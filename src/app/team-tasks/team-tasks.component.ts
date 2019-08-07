@@ -9,7 +9,6 @@ import { DevelopersComponent } from '../developers/developers.component';
 
 import * as moment from 'moment';
 import { DevWeekTasks } from './dev-week-tasks';
-import { Consumer } from '../consumer';
 import { MenuItem, ConfirmationService } from 'primeng/api';
 import { TaskUIData } from '../tasks/TaskUIData';
 import { Developer } from '../developers/Developer';
@@ -21,7 +20,7 @@ import { DevelopersService } from '../developers/developers.service';
   templateUrl: './team-tasks.component.html',
   styleUrls: ['./team-tasks.component.css']
 })
-export class TeamTasksComponent implements OnInit, Consumer {
+export class TeamTasksComponent implements OnInit {
 
   weekStartRange = 3;
   weekEndRange = 1;
@@ -89,9 +88,9 @@ export class TeamTasksComponent implements OnInit, Consumer {
       if (tasksArr[0]) {
         this.tasks = this.tasks.concat(...tasksArr[0]);
       }
-      if (tasksArr[3]) {
-        this.tasks = this.tasks.concat(...tasksArr[1]);
-      }
+      // if (tasksArr[1]) {
+      //   this.tasks = this.tasks.concat(...tasksArr[1]);
+      // }
       if (tasksArr[1]) {
         this.developers = tasksArr[1];
         this.createBlankOpenTaskForAllDev();
@@ -283,7 +282,7 @@ export class TeamTasksComponent implements OnInit, Consumer {
   }
 
 
-  editTask(devName: string, week: string, taskIndex: number) {
+  editTaskInline(devName: string, week: string, taskIndex: number) {
     this.selectedTaskId = '';
     this.newTask = '';
     this.setSelectedTask(devName, week, taskIndex);
@@ -329,7 +328,11 @@ export class TeamTasksComponent implements OnInit, Consumer {
       this.tasksComponent.selectedTaskUIData = taskUIData;
       this.tasksComponent.editTask();
     } else {
-      this.tasksComponent.showAddDialog();
+      var startDate;
+      if (this.selectedWeek) {
+        startDate = this.weekDates.get(this.selectedWeek)[this.startDateKey];
+      }
+      this.tasksComponent.showAddDialogWithDateAndDev(startDate, this.getDevNameForId(this.selectedDevName));
     }
     console.log(event);
   }

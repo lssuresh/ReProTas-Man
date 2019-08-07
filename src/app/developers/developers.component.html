@@ -45,7 +45,7 @@
         <div class="ui-g ui-fluid" *ngIf="newDeveloper">
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="Name">Name</label>
+                    <label for="Name">*Name</label>
                 </div>
                 <div class="ui-g-8">
                     <input pInputText id="name" formControlName="name" />
@@ -53,7 +53,16 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="phone">Phone</label>
+                    <label for="userId">*UserId</label>
+                </div>
+                <div class="ui-g-8">
+                    <input pInputText id="userId" formControlName="userId" />
+                </div>
+            </div>
+
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="phone">*Phone</label>
                 </div>
                 <div class="ui-g-8">
                     <input pInputText id="phone" formControlName="phone" />
@@ -61,7 +70,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="mobile">Mobile</label>
+                    <label for="mobile">*Mobile</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item">
                     <input pInputText id="mobile" formControlName="mobile" />
@@ -69,7 +78,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="email">Email</label>
+                    <label for="email">*Email</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item">
                     <input pInputText id="email" formControlName="email" />
@@ -77,7 +86,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="work_hours">Work Hours</label>
+                    <label for="work_hours">*Work Hours</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item">
                     <input pInputText id="work_hours" formControlName="work_hours" />
@@ -85,7 +94,7 @@
             </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
-                    <label for="status">Status</label>
+                    <label for="status">*Status</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item" ui-dropdown-item>
                     <p-dropdown [options]="commonDataComponent.developerStatuses.itemList" placeholder="Select Status"

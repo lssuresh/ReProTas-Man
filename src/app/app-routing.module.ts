@@ -10,18 +10,20 @@ import { ReleaseComponent } from './release/release.component';
 import { TaskCalendarComponent } from './task-calendar/task-calendar.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/task-calendar', pathMatch: 'full' },
+
+  { path: 'login/:user', component: TaskCalendarComponent, pathMatch: 'full' },
   { path: 'projects', component: ProjectsComponent },
   { path: 'common-data', component: CommonDataComponent },
   { path: 'developers', component: DevelopersComponent },
-  { path: 'tasks', component: TasksComponent },
+  { path: 'tasks', component: TasksComponent, runGuardsAndResolvers: `always` },
   { path: 'team-tasks', component: TeamTasksComponent },
   { path: 'releases', component: ReleaseComponent },
-  { path: 'task-calendar', component: TaskCalendarComponent }
+  { path: 'task-calendar', component: TaskCalendarComponent },
+  { path: '**', redirectTo: 'login/ssrinivasan' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { enableTracing: true, onSameUrlNavigation: `reload` })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

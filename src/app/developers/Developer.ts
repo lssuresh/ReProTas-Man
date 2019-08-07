@@ -9,6 +9,7 @@ export class Developer extends Base {
   email: string;
   workHours: string;
   status: string;
+  userId: string;
 
   constructor() {
     super(Developer.name);

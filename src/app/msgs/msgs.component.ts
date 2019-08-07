@@ -12,8 +12,6 @@ import { timer } from 'rxjs/internal/observable/timer';
 @Injectable()
 export class MsgsComponent implements OnInit {
 
-
-
   constructor(private messageService: MessageService) { }
 
   ngOnInit() {

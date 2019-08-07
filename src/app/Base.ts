@@ -3,6 +3,8 @@ import { Deserializable } from './Deserializable';
 export class Base implements Deserializable {
   id: string;
   elasticType: string;
+  updated_by: string;
+  updated_date: Date;
 
   constructor(elasticType: string) {
     this.elasticType = elasticType;

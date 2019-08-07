@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
@@ -39,6 +39,8 @@ import { TreeModule } from 'primeng/tree';
 import { FullCalendarModule } from 'primeng/fullcalendar';
 import { TaskCalendarComponent } from './task-calendar/task-calendar.component';
 import { TabMenuModule } from 'primeng/tabmenu';
+import { ReproErrorHandler } from './error-handler';
+import { AngularWebStorageModule } from 'angular-web-storage';
 
 @NgModule({
   declarations: [
@@ -81,9 +83,10 @@ import { TabMenuModule } from 'primeng/tabmenu';
     ConfirmDialogModule,
     TreeModule,
     FullCalendarModule,
-    TabMenuModule
+    TabMenuModule,
+    AngularWebStorageModule
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [{ provide: ErrorHandler, useClass: ReproErrorHandler }, MessageService, ConfirmationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

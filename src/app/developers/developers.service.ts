@@ -19,12 +19,14 @@ export class DevelopersService extends BaseService {
     return this.elasticService.getAllDocuments(Developer.name, Developer);
   }
   addDeveloper(developer: Developer): Observable<Developer> {
+    this.setAuditData(developer);
     return this.elasticService.addDocument(developer);
   }
   deleteDeveloper(developer: Developer): Observable<Developer> {
     return this.elasticService.deleteDocument(developer);
   }
   updateDeveloper(developer: Developer): Observable<Developer> {
+    this.setAuditData(developer);
     return this.elasticService.updateDocument(developer);
   }
   getActiveDevelopers(): Observable<Developer[]> {

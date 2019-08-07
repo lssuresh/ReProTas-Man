@@ -27,15 +27,18 @@ export class TasksService extends BaseService {
   }
 
   addTask(task: Task): Observable<Task> {
+    this.setAuditData(task);
     return this.elasticService.addDocument(task);
   }
   deleteTask(task: Task): Observable<Task> {
     return this.elasticService.deleteDocument(task);
   }
   updateTask(task: Task): Observable<Task> {
+    this.setAuditData(task);
     return this.elasticService.updateDocument(task);
   }
   addOrUpdate(task: Task): Observable<Task> {
+    this.setAuditData(task);
     if (!task.id) {
       return this.addTask(task);
     } else {

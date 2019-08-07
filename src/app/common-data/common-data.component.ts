@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ListboxModule } from 'primeng/listbox';
-import { SelectItem } from 'primeng/api';
 import { CommonDataService } from './common-data.service';
 import { CommonData } from './common-data';
 import { SingleCommonData } from './single-common-data';
 import { MsgsComponent } from '../msgs/msgs.component';
-import { timer, Observable } from 'rxjs';
+import { timer, Observable, BehaviorSubject } from 'rxjs';
 import { DropDownCommonData } from './dropdown-common-data'
-import { of } from "rxjs";
 
 @Component({
   selector: 'app-common-data',
@@ -26,8 +23,9 @@ export class CommonDataComponent implements OnInit {
 
   private commonData: CommonData;
 
-
   dropdownItemsMap: Map<string, DropDownCommonData>;
+
+  dropdownItemSubjectMap: Map<String, BehaviorSubject<DropDownCommonData>>;
 
   releases: DropDownCommonData = { selectedItem: '', itemList: [] };
   projectManagers: DropDownCommonData = { selectedItem: '', itemList: [] };
@@ -37,7 +35,6 @@ export class CommonDataComponent implements OnInit {
   taskStatuses: DropDownCommonData = { selectedItem: '', itemList: [] };
 
   constructor(private commonDataService: CommonDataService, private msgsComponent: MsgsComponent) {
-
     this.dropdownItemsMap = new Map<string, DropDownCommonData>();
     this.dropdownItemsMap.set(this.RELEASES_KEY, this.releases);
     this.dropdownItemsMap.set(this.PROJECT_MANAGER_KEY, this.projectManagers);
@@ -46,6 +43,14 @@ export class CommonDataComponent implements OnInit {
     this.dropdownItemsMap.set(this.APPLICATIONS, this.applications);
     this.dropdownItemsMap.set(this.TASK_STATUS, this.taskStatuses);
 
+    this.dropdownItemSubjectMap = new Map<string, BehaviorSubject<DropDownCommonData>>();
+    this.dropdownItemSubjectMap.set(this.RELEASES_KEY, new BehaviorSubject(this.releases));
+    this.dropdownItemSubjectMap.set(this.PROJECT_MANAGER_KEY, new BehaviorSubject(this.projectManagers));
+    this.dropdownItemSubjectMap.set(this.PROJECT_STATUS_KEY, new BehaviorSubject(this.projectStatuses));
+    this.dropdownItemSubjectMap.set(this.DEVELOPER_STATUS, new BehaviorSubject(this.developerStatuses));
+    this.dropdownItemSubjectMap.set(this.APPLICATIONS, new BehaviorSubject(this.applications));
+    this.dropdownItemSubjectMap.set(this.TASK_STATUS, new BehaviorSubject(this.taskStatuses));
+
     this.createCommonData();
 
     for (let value of Array.from(this.dropdownItemsMap.values())) {
@@ -53,7 +58,7 @@ export class CommonDataComponent implements OnInit {
     }
   }
   ngOnInit() {
-    this.refreshCommonData();
+    this.refreshCommonData(true);
   }
 
   createCommonData() {
@@ -74,15 +79,18 @@ export class CommonDataComponent implements OnInit {
     this.commonData.getDataList().push(singleCommonData);
   }
 
-  refreshWithCommonDataWithTimer() {
+  refreshWithTimer() {
     let source = timer(1000);
     source.subscribe(t => {
-      this.refreshCommonData();
+      this.refreshCommonData(true);
     });
   }
 
 
-  refreshCommonData(): Observable<CommonData> {
+  refreshCommonData(force = false) {
+    if (!force && this.applications.itemList.length != 0) {
+      return;
+    }
     var observerRef;
     this.commonDataService.getCommonData().subscribe(data => {
       if (data && data[0]) {
@@ -107,6 +115,7 @@ export class CommonDataComponent implements OnInit {
       if (value.itemList) {
         value.itemList.sort();
       }
+      this.dropdownItemSubjectMap.get(key).next(value);
     });
   }
 
@@ -125,8 +134,6 @@ export class CommonDataComponent implements OnInit {
   createSelectItems(items: string[]) {
     var selectedItems = [];
     if (items) {
-      // add a blank item at the top of the list
-      //selectedItems = [...selectedItems, { label: '', value: '' }];
       items.forEach(item => {
         selectedItems = [...selectedItems, { label: item, value: item }];
       });
@@ -154,7 +161,7 @@ export class CommonDataComponent implements OnInit {
 
     this.commonDataService.upsertData(this.commonData).subscribe(data => {
       if (data) {
-        this.refreshWithCommonDataWithTimer();
+        this.refreshWithTimer();
         console.log("Common Data Processed!");
         this.msgsComponent.showInfo("Common Data Syncd!");
       } else {
@@ -183,6 +190,10 @@ export class CommonDataComponent implements OnInit {
   clearData(name) {
     var dropDownItems = this.dropdownItemsMap.get(name);
     dropDownItems.selectedItem = '';
+  }
+
+  getSubject(key: string) {
+    return this.dropdownItemSubjectMap.get(key);
   }
 
 }

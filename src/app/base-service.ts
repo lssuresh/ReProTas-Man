@@ -1,8 +1,9 @@
 import { ElasticsearchService } from './elasticsearch.service';
 import { Observable } from 'rxjs';
+import { Base } from './Base';
 
 export class BaseService {
-
+    DEFAULT_USER = 'unk';
     elasticType: string;
 
     elasticService: ElasticsearchService;
@@ -23,6 +24,14 @@ export class BaseService {
     }
     getElasticService() {
         return this.elasticService;
+    }
+    getUser() {
+        var user = JSON.parse(localStorage.user)._value;
+        return user ? user : this.DEFAULT_USER;
+    }
+    setAuditData(base: Base) {
+        base.updated_by = this.getUser();
+        base.updated_date = new Date();
     }
 
 }

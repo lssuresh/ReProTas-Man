@@ -10,6 +10,7 @@ import { CommonDataComponent } from '../common-data/common-data.component';
 import { MenuItem } from 'primeng/components/common/api';
 import { DataTable } from 'primeng/primeng';
 import { ActivatedRoute } from '@angular/router';
+import { LocalStorage } from 'angular-web-storage';
 
 @Component({
   selector: 'app-projects',
@@ -68,6 +69,7 @@ export class ProjectsComponent implements OnInit {
     this.refreshProjects();
     this.newProjectForm();
     this.commonDataComponent.refreshCommonData();
+
     this.menuItems = [
       { label: 'New ', icon: 'pi pi-plus', command: (event) => this.showAddDialog() },
       { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editProject() },
@@ -120,6 +122,8 @@ export class ProjectsComponent implements OnInit {
     this.projectForm = this.pfb.group({
       'id': new FormControl(''),
       'elasticType': new FormControl(''),
+      'updated_by': new FormControl(''),
+      'updated_date': new FormControl(''),
       'name': new FormControl('', Validators.required),
       'desc': new FormControl('', Validators.required),
       'application': new FormControl('', Validators.required),

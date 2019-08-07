@@ -29,7 +29,6 @@ export class ReleaseComponent implements OnInit {
 
   APP_NAME = "misc";
 
-  projects = new Map<string, string>();
   developers = new Map<string, string>();
 
   releaseItems: ReleaseItemUI[];
@@ -62,27 +61,22 @@ export class ReleaseComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.commonDataComponent.refreshCommonData().subscribe(data => {
-      this.root = [new ReProTasNode("All Releases", "Releases", false)];
-      this.buildTree();
-    });
+
     this.releaseItems = [];
     this.loadDevelopers();
 
     this.menuItems = [
       { label: 'Open', icon: 'pi pi-pencil', command: (event) => this.openReleaseItem() }
     ];
+
+    this.root = [new ReProTasNode("All Releases", "Releases", false)];
+    this.buildTree();
+
   }
   buildTree() {
     this.buildTaskNodes();
   }
-  loadProjects() {
-    this.projectService.getOpenProjects().subscribe(data => {
-      data.forEach(item => {
-        this.projects.set(item.id, item.name);
-      });
-    });
-  }
+
   loadDevelopers() {
     this.developersService.getActiveDevelopers().subscribe(data => {
       data.forEach(item => {

@@ -4,5 +4,8 @@
   </h1>
   <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
   <router-outlet></router-outlet>
-  <app-msgs></app-msgs>
 </div>
+<div style="text-align:left">
+  User: {{user}} | <span *ngIf='isAdmin'> Admin </span>
+</div>
+<app-msgs></app-msgs>
