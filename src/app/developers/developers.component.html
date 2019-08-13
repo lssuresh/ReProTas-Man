@@ -107,7 +107,7 @@
         <p-footer>
             <div class="ui-dialog-buttonpane ui-helper-clearfix">
                 <button type="submit" pButton icon="fa fa-check" label="Save"
-                    [disabled]="!developerForm.valid"></button>
+                    [disabled]="!developerForm.valid" *ngIf=""></button>
             </div>
         </p-footer>
 

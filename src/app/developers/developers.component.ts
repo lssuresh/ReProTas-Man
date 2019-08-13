@@ -152,16 +152,6 @@ export class DevelopersComponent implements OnInit {
     }
   }
 
-  getDevName(id: string): string {
-    var name = "";
-    this.developers.forEach(item => {
-      if (item.id == id) {
-        name = item.name;
-        return;
-      }
-    });
-    return name;
-  }
   getDeveloperList(): Developer[] {
     return this.developers;
   }

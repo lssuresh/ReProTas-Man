@@ -7,6 +7,7 @@ import { TaskDialogComponent } from './tasks/task-dialog/task-dialog.component';
 import { MenuItem } from 'primeng/api';
 import { ActivatedRoute, Router, GuardsCheckEnd } from '@angular/router';
 import { LocalStorageService, SessionStorageService, LocalStorage, SessionStorage } from 'angular-web-storage';
+import { LocalStorageLabel } from './LocalStorageLabel';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +30,7 @@ export class AppComponent {
 
   constructor(private activatedRoute: ActivatedRoute, private router: Router, private msgsComponent: MsgsComponent, private localStorage: LocalStorageService) {
     this.isAdmin = false;
+    this.localStorage.set(LocalStorageLabel.USER, '');
   }
 
   ngOnInit() {
@@ -44,8 +46,8 @@ export class AppComponent {
     var obs = this.router.events.subscribe(event => {
       if (event instanceof GuardsCheckEnd) {
         var guardsCheckEvent = event;
-        this.isAdmin = event.state.root.queryParams['admin'] == "admin";
-        this.user = event.state.root.firstChild.params['user'];
+        this.isAdmin = event.state.root.queryParams[LocalStorageLabel.IS_ADMIN] == "admin";
+        this.user = event.state.root.firstChild.params[LocalStorageLabel.USER];
         obs.unsubscribe();
         if (this.isAdmin) {
           this.items.push({ label: 'Developer', icon: 'pi pi-users', routerLink: 'developers' });

@@ -1,6 +1,8 @@
 import { ElasticsearchService } from './elasticsearch.service';
 import { Observable } from 'rxjs';
 import { Base } from './Base';
+import { LocalStorageLabel } from './LocalStorageLabel';
+import { LocalStorageService } from 'angular-web-storage';
 
 export class BaseService {
     DEFAULT_USER = 'unk';
@@ -26,7 +28,7 @@ export class BaseService {
         return this.elasticService;
     }
     getUser() {
-        var user = JSON.parse(localStorage.user)._value;
+        var user = JSON.parse(localStorage.getItem(LocalStorageLabel.USER))._value;
         return user ? user : this.DEFAULT_USER;
     }
     setAuditData(base: Base) {

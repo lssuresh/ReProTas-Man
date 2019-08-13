@@ -13,6 +13,8 @@ import { TaskUIData } from './TaskUIData';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 import { ActivatedRoute } from '@angular/router';
 import { LocalStorageService } from 'angular-web-storage';
+import { LocalStorageLabel } from '../LocalStorageLabel';
+import { DevHelper } from '../developers/DevHelper';
 
 
 @Component({
@@ -21,7 +23,6 @@ import { LocalStorageService } from 'angular-web-storage';
   styleUrls: ['./tasks.component.css']
 })
 export class TasksComponent implements OnInit {
-
 
   DEFAULT_DISPLAY_VAL = "#NAV"
   tasks: Task[];
@@ -69,7 +70,7 @@ export class TasksComponent implements OnInit {
     private projectService: ProjectsService,
     private developersService: DevelopersService, private localStorage: LocalStorageService) {
 
-    this.developerParam = localStorage.get('developer');
+    this.developerParam = localStorage.get(LocalStorageLabel.USER);
     this.route.queryParams.subscribe(params => {
       this.releaseParam = params['releaseNode'];
       if (params['task'] && this.taskParam != params['task']) {
@@ -108,7 +109,7 @@ export class TasksComponent implements OnInit {
   loadTasks() {
     if (this.developerParam && this.taskParam != "All") {
       if (this.developers && this.developers.length > 0) {
-        var dev = this.developers.filter(item => item.name == this.developerParam);
+        var dev = this.developers.filter(item => item.userId == this.developerParam);
         if (dev && dev.length > 0) {
           this.tasksService.getTasksForDev(dev[0].id).subscribe(tasks => this.displayTasks(tasks));
         } else {
@@ -187,17 +188,17 @@ export class TasksComponent implements OnInit {
     }
   }
 
-  setSelectDeveloper(devCode) {
+  setSelectDeveloper(devId) {
     //var projectCode = event.value.code; 
-    if (devCode) {
+    if (devId) {
       var task = this.selectedTaskUIData.task;
-      var developerList = this.developers.filter(item => item.id == devCode);
-      if (developerList.length > 0) {
-        this.selectedDeveloper = developerList[0];
+      this.selectedDeveloper = DevHelper.getDeveloperWithID(devId, this.developers);
+      if (this.selectedDeveloper) {
         task.developer = this.selectedDeveloper.id;
       }
     }
   }
+
 
   reset(event: Event) {
     this.selectedTaskUIData = null;
@@ -252,8 +253,13 @@ export class TasksComponent implements OnInit {
     this.taskDialog.init(this);
     this.displayDialog = true;
     this.taskDialog.selectedTaskUIData = new TaskUIData();
+    if (this.developerParam) {
+      this.taskDialog.selectedTaskUIData.task.developer = DevHelper.getDevIdForUserName(this.developerParam, this.developers);;
+    }
     this.taskDialog.showAddDialog();
   }
+
+
   showAddDialogWithDateAndDev(start_date: Date, dev: string) {
     this.taskDialog.init(this);
     this.displayDialog = true;
@@ -274,7 +280,8 @@ export class TasksComponent implements OnInit {
     this.tasksService.deleteTask(this.selectedTaskUIData.task).subscribe(
       data => {
         console.log("Deleted Successfully!");
-        this.tasks = this.tasks.filter(dev => dev.name != this.selectedTaskUIData.task.name);
+        this.tasks = this.tasks.filter(task => task.name != this.selectedTaskUIData.task.name);
+        this.tasksUIData = this.tasksUIData.filter(taskUI => taskUI.task.name == this.selectedTaskUIData.task.name);
         this.refreshWithTimer();
         this.msgsComponent.showInfo('Task Deleted!');
       });
@@ -283,13 +290,17 @@ export class TasksComponent implements OnInit {
   dialogDataChanged(event) {
     if (!event.id) {
       this.tasks.push(event);
+      var taskUIData = new TaskUIData();
+      taskUIData.task = event;
+      taskUIData.projectName = '';
+      taskUIData.developerName = '';
+      this.tasksUIData.push(taskUIData);
     } else {
       var updatedTask = this.tasks.filter(item => item.id == event.id);
       if (updatedTask && updatedTask.length > 0) {
-        updatedTask[0].name = event.name;
+        updatedTask[0] = event;
       }
     }
     this.refreshWithTimer();
-
   }
 }

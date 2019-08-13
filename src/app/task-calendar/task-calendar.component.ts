@@ -11,6 +11,7 @@ import { TaskUIData } from '../tasks/TaskUIData';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { LocalStorageService } from 'angular-web-storage';
+import { LocalStorageLabel } from '../LocalStorageLabel';
 
 
 @Component({
@@ -36,7 +37,7 @@ export class TaskCalendarComponent implements OnInit {
     private msgsComponent: MsgsComponent,
     private developerService: DevelopersService,
     private tasksComponent: TasksComponent, private localStorage: LocalStorageService) {
-    this.developer = localStorage.get('user');
+    this.developer = localStorage.get(LocalStorageLabel.USER);
   }
 
   ngOnInit() {
