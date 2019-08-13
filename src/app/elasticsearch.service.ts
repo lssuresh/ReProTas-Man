@@ -7,6 +7,7 @@ import { Observable, of, from, Subscriber, observable } from 'rxjs';
 import { Deserializable } from './Deserializable';
 import { ObjectFactory } from './ObjectFactory';
 import { ElasticQuery } from './elastic-query';
+import { Base } from './Base';
 
 @Injectable({
   providedIn: 'root'
@@ -63,7 +64,7 @@ export class ElasticsearchService {
     console.log("HTTP POST " + url);
     console.log("BODY " + body);
     this.http.post(url, body, this.httpOptions).subscribe(response => this.processResponse(_type, response, subscriberRef));
-     
+
     return observable;
   }
 
@@ -186,17 +187,15 @@ export class ElasticsearchService {
 
 
   // We want to use it without index so we use http
-  addDocument(value): Observable<any> {
+  addDocument(value: Base): Observable<any> {
     if (value) {
       return this.http.post(this.getURL(), value, this.httpOptions);
-
     } else {
       console.log("Type or value is null. Val =" + value);
     }
   }
 
-
-  updateDocument(value): Observable<any> {
+  updateDocument(value: Base): Observable<any> {
     if (value) {
       return this.http.post(this.getURL() + '/' + value.id, value, this.httpOptions);
     } else {

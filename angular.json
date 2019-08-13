@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Management": {
+    "ReproTasMan": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/Management",
+            "outputPath": "dist/ReproTasMan",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -24,7 +24,7 @@
             ],
             "styles": [
               "src/styles.css",
-              "node_modules/primeicons/primeicons.css",               
+              "node_modules/primeicons/primeicons.css",
               "node_modules/primeng/resources/themes/nova-light/theme.css",
               "node_modules/primeng/resources/primeng.min.css"
             ],
@@ -61,18 +61,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "Management:build"
+            "browserTarget": "ReproTasMan:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "Management:build:production"
+              "browserTarget": "ReproTasMan:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Management:build"
+            "browserTarget": "ReproTasMan:build"
           }
         },
         "test": {
@@ -106,7 +106,7 @@
         }
       }
     },
-    "Management-e2e": {
+    "ReproTasMan-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -115,11 +115,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "Management:serve"
+            "devServerTarget": "ReproTasMan:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "Management:serve:production"
+              "devServerTarget": "ReproTasMan:serve:production"
             }
           }
         },
@@ -135,5 +135,5 @@
       }
     }
   },
-  "defaultProject": "Management"
+  "defaultProject": "ReproTasMan"
 }
