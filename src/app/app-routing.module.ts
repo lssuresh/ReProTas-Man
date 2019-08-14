@@ -11,7 +11,7 @@ import { TaskCalendarComponent } from './task-calendar/task-calendar.component';
 
 const routes: Routes = [
 
-  { path: 'login/:user', component: TaskCalendarComponent, pathMatch: 'full' },
+  { path: 'login/:user', component: TaskCalendarComponent },
   { path: 'projects', component: ProjectsComponent },
   { path: 'common-data', component: CommonDataComponent },
   { path: 'developers', component: DevelopersComponent },
