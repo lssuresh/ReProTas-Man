@@ -2,5 +2,5 @@ export const environment = {
   production: true
 };
 export const elastic = {
-  url: ""
+  elastic_url: "http://elastic.prcins.net:9200/"
 }

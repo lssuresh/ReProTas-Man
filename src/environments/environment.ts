@@ -4,10 +4,10 @@
 
 export const environment = {
   production: false,
-  elastic_url: "http://localhost:9200/"
+  elastic_url: "http://model.elastic.prcins.net:9200/"
 };
 
- 
+
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
