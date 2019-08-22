@@ -1,4 +1,0 @@
-FROM node:8.11.4 as node
-WORKDIR /app
-
-COPY . .
