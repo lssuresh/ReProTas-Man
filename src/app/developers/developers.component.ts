@@ -7,6 +7,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { MsgsComponent } from '../msgs/msgs.component';
 import { timer, Subject } from 'rxjs';
 import { ObjectFactory } from '../ObjectFactory';
+import { LocalStorage } from 'angular-web-storage';
 
 @Component({
   selector: 'app-developers',
@@ -31,6 +32,8 @@ export class DevelopersComponent implements OnInit {
   selectedRelease: string;
 
   developerListSubject: Subject<Developer[]>;
+
+  @LocalStorage() isAdmin: boolean;
 
   columnsToDisplay: any[] = [
     { field: 'name', header: 'Name' },
