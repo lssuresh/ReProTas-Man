@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
 
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonDataComponent } from '../common-data/common-data.component';
 import { MsgsComponent } from '../msgs/msgs.component';
 import { TasksService } from './tasks.service';
@@ -8,14 +8,14 @@ import { timer, BehaviorSubject } from 'rxjs';
 import { Project } from '../projects/Project'
 import { Developer } from '../developers/Developer';
 import { ProjectsService } from '../projects/projects.service';
-import { DevelopersService } from '../developers/developers.service';
 import { TaskUIData } from './TaskUIData';
+import { DevelopersService } from '../developers/developers.service';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 import { ActivatedRoute } from '@angular/router';
+
 import { LocalStorageService } from 'angular-web-storage';
 import { LocalStorageLabel } from '../LocalStorageLabel';
 import { DevHelper } from '../developers/DevHelper';
-
 
 @Component({
   selector: 'app-tasks',
@@ -24,8 +24,8 @@ import { DevHelper } from '../developers/DevHelper';
 })
 export class TasksComponent implements OnInit {
 
-  DEFAULT_DISPLAY_VAL = "#NAV"
   tasks: Task[];
+  DEFAULT_DISPLAY_VAL = "#NAV"
   tasksUIData: TaskUIData[];
   selectedTaskUIData: TaskUIData;
   displayDialog: boolean;
@@ -123,8 +123,8 @@ export class TasksComponent implements OnInit {
         });
       }
     } else {
-      this.tasksService.loadTasks().subscribe(tasks => this.displayTasks(tasks));
     }
+    this.tasksService.loadTasks().subscribe(tasks => this.displayTasks(tasks));
   }
   displayTasks(tasks: Task[]) {
     console.log("Retrieved Tasks ===>" + tasks);
@@ -180,8 +180,8 @@ export class TasksComponent implements OnInit {
     //var projectCode = event.value.code;
     if (projectCode) {
       var task = this.selectedTaskUIData.task;
-      var projects = this.projects.filter(item => item.id == projectCode);
       if (projects.length > 0) {
+        var projects = this.projects.filter(item => item.id == projectCode);
         this.selectedProject = projects[0];
         task.project = this.selectedProject.id;
       }
@@ -196,11 +196,11 @@ export class TasksComponent implements OnInit {
       if (this.selectedDeveloper) {
         task.developer = this.selectedDeveloper.id;
       }
+      reset(event: Event) {
+      }
     }
-  }
 
 
-  reset(event: Event) {
     this.selectedTaskUIData = null;
     this.selectedProject = new Project();
     this.selectedDeveloper = new Developer();

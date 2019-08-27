@@ -35,4 +35,7 @@ export class DevelopersService extends BaseService {
   getDeveloperWithName(name: string): Observable<Developer[]> {
     return this.getWithFieldValueInType(Developer, "name", [name]);
   }
+  getDeveloperWithUserId(userId: string): Observable<Developer[]> {
+    return this.getWithFieldValueInType(Developer, "userId", [userId]);
+  }
 }
