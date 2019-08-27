@@ -69,7 +69,7 @@
     {{selectedProject.id}}
 </div>
 <p-dialog header="Project Details" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
-    [style]="{width:'400px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"
+    [style]="{width:'500px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"
     [contentStyle]="{'overflow':'visible'}">
     <form [formGroup]="projectForm" (ngSubmit)="save()">
         <div class="ui-g ui-fluid" *ngIf="newProject">

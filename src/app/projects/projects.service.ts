@@ -11,7 +11,7 @@ import { LocalStorageService } from 'angular-web-storage';
   providedIn: 'root'
 })
 export class ProjectsService extends BaseService {
-  
+
   elasticType = "project";
 
   constructor(elasticService: ElasticsearchService, localStorage: LocalStorageService) {
@@ -33,7 +33,7 @@ export class ProjectsService extends BaseService {
     return this.elasticService.updateDocument(project);
   }
   getOpenProjects(): Observable<Project[]> {
-    return this.getWithFieldValueInType(Project, "status", ["Open"]);
+    return this.getWithFieldValueNotInType(Project, "status", ["Closed"]);
   }
   getProjectsWithStatus(status): Observable<Project[]> {
     return this.getWithFieldValueInType(Project, "status", [status]);
