@@ -32,7 +32,7 @@ export class DevelopersService extends BaseService {
   getActiveDevelopers(): Observable<Developer[]> {
     return this.getWithFieldValueInType(Developer, "status", ["Active"]);
   }
-  getDeveloperWithName(name: string): Observable<Developer> {
+  getDeveloperWithName(name: string): Observable<Developer[]> {
     return this.getWithFieldValueInType(Developer, "name", [name]);
   }
 }

@@ -160,7 +160,7 @@
         </div>
         <p-footer>
             <div class="ui-dialog-buttonpane ui-helper-clearfix"
-                *ngIf="selectedProject && selectedProject.status !='Closed'">
+                *ngIf="!selectedProject || selectedProject.status !='Closed'">
                 <button type="submit" pButton icon="pi pi-check" label="Save" [disabled]="!projectForm.valid"></button>
             </div>
         </p-footer>
