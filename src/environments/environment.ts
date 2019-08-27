@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  elastic_url: "http://localhost:9200/"
+  elastic_url: "http://model.elastic.prcins.net:9200/"
 };
 
 
