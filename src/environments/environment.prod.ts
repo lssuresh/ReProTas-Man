@@ -1,6 +1,4 @@
 export const environment = {
-  production: true
-};
-export const elastic = {
+  production: true,
   elastic_url: "http://elastic.prcins.net:9200/"
-}
+};
