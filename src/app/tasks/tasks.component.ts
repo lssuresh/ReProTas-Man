@@ -16,13 +16,14 @@ import { ActivatedRoute } from '@angular/router';
 import { LocalStorageService } from 'angular-web-storage';
 import { LocalStorageLabel } from '../LocalStorageLabel';
 import { DevHelper } from '../developers/DevHelper';
+import { BaseComponent } from '../base-component';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.css']
 })
-export class TasksComponent implements OnInit {
+export class TasksComponent extends BaseComponent implements OnInit {
 
   tasks: Task[];
   DEFAULT_DISPLAY_VAL = "#NAV"
@@ -40,7 +41,6 @@ export class TasksComponent implements OnInit {
 
   taskParamSubject;
   taskParam: string;
-  releaseParam: string;
   developerParam: string;
   allTasks: boolean
 
@@ -69,10 +69,9 @@ export class TasksComponent implements OnInit {
     private commonDataComponent: CommonDataComponent,
     private projectService: ProjectsService,
     private developersService: DevelopersService, private localStorage: LocalStorageService) {
-
+    super();
     this.developerParam = localStorage.get(LocalStorageLabel.USER);
     this.route.queryParams.subscribe(params => {
-      this.releaseParam = params['releaseNode'];
       if (params['task'] && this.taskParam != params['task']) {
         this.taskParam = params['task'];
         this.refreshTasks();
@@ -116,15 +115,15 @@ export class TasksComponent implements OnInit {
           this.msgsComponent.showError("Invalid dev name");
         }
       } else {
-        this.developersService.getDeveloperWithName(this.developerParam).subscribe(developer => {
+        this.developersService.getDeveloperWithUserId(this.developerParam).subscribe(developer => {
           if (developer) {
             this.tasksService.getTasksForDev(developer[0].id).subscribe(tasks => this.displayTasks(tasks));
           }
         });
       }
     } else {
+      this.tasksService.loadTasks().subscribe(tasks => this.displayTasks(tasks));
     }
-    this.tasksService.loadTasks().subscribe(tasks => this.displayTasks(tasks));
   }
   displayTasks(tasks: Task[]) {
     console.log("Retrieved Tasks ===>" + tasks);
@@ -171,7 +170,7 @@ export class TasksComponent implements OnInit {
       this.setSelectProject(this.selectedTaskUIData.task.project);
       this.setSelectDeveloper(this.selectedTaskUIData.task.developer);
       this.taskDialog.createDeveloperList();
-      this.taskDialog.createDeveloperList();
+      this.taskDialog.createProjectsList();
       this.displayDialog = true;
     }
   }
@@ -180,7 +179,7 @@ export class TasksComponent implements OnInit {
     //var projectCode = event.value.code;
     if (projectCode) {
       var task = this.selectedTaskUIData.task;
-      if (projects.length > 0) {
+      if (this.projects.length > 0) {
         var projects = this.projects.filter(item => item.id == projectCode);
         this.selectedProject = projects[0];
         task.project = this.selectedProject.id;
@@ -196,11 +195,9 @@ export class TasksComponent implements OnInit {
       if (this.selectedDeveloper) {
         task.developer = this.selectedDeveloper.id;
       }
-      reset(event: Event) {
-      }
     }
-
-
+  }
+  reset(event: Event) {
     this.selectedTaskUIData = null;
     this.selectedProject = new Project();
     this.selectedDeveloper = new Developer();

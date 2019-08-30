@@ -18,8 +18,9 @@ const routes: Routes = [
   { path: 'tasks', component: TasksComponent, runGuardsAndResolvers: `always` },
   { path: 'team-tasks', component: TeamTasksComponent },
   { path: 'releases', component: ReleaseComponent },
-  { path: 'task-calendar', component: TaskCalendarComponent },
-  { path: '**', redirectTo: 'login/ssrinivasan' }
+  { path: 'team-calendar', component: TaskCalendarComponent, },
+  { path: 'my-calendar', component: TaskCalendarComponent, },
+  { path: '**', redirectTo: 'team-calendar' }
 ];
 
 @NgModule({

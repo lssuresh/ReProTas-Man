@@ -8,6 +8,7 @@ import { TasksComponent } from '../tasks.component';
 import { ProjectsService } from 'src/app/projects/projects.service';
 import { DevelopersService } from 'src/app/developers/developers.service';
 import { TaskUIData } from '../TaskUIData';
+import { BaseComponent } from 'src/app/base-component';
 
 @Component({
   selector: 'app-task-dialog',
@@ -15,7 +16,7 @@ import { TaskUIData } from '../TaskUIData';
   styleUrls: ['./task-dialog.component.css']
 })
 @Injectable()
-export class TaskDialogComponent implements OnInit {
+export class TaskDialogComponent extends BaseComponent implements OnInit {
 
   @Input() visible: boolean = false;
   @Output() displayChange = new EventEmitter();
@@ -37,7 +38,9 @@ export class TaskDialogComponent implements OnInit {
 
   constructor(
     private msgsComponent: MsgsComponent,
-    private tasksService: TasksService, private commonDataComponent: CommonDataComponent) { }
+    private tasksService: TasksService, private commonDataComponent: CommonDataComponent) {
+    super();
+  }
 
   ngOnInit() {
     this.errorMsgs = [];

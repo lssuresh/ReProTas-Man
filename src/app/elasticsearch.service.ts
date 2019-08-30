@@ -76,6 +76,7 @@ export class ElasticsearchService {
     } else if (response['hits']['hits'].length > 0) {
       console.log("No date found for call type " + _type.name);
     } else {
+      subscriber.next(null);
       console.log("Could not retrieve data for call type " + _type.name);
     }
     subscriber.complete();

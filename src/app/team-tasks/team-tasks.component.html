@@ -32,7 +32,7 @@
       <td pEditableColumn *ngFor="let col of weeks" [pContextMenuRow]="rowData.devName"
         (mouseup)="onRowSelect($event, rowData.devName, col, taskIndex)">
         <p-cellEditor>
-          <ng-template pTemplate="input">
+          <ng-template pTemplate="input" *ngIf='user'>
             <input pInputText type="text" [(ngModel)]="newTask"
               (focusin)="editTaskInline(rowData.devName, col, taskIndex)"
               (keydown.enter)="saveTask(rowData.devName, col, taskIndex)">

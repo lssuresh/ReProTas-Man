@@ -4,7 +4,7 @@ import { Base } from './Base';
 import { LocalStorageLabel } from './LocalStorageLabel';
 import { LocalStorageService } from 'angular-web-storage';
 
-export class BaseService {
+export abstract class BaseService {
     DEFAULT_USER = 'unk';
     elasticType: string;
 

@@ -130,7 +130,7 @@
     </div>
     <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
-        <button type="submit" pButton icon="pi pi-check" label="Save"></button>
+        <button type="submit" pButton icon="pi pi-check" label="Save" *ngIf='user'></button>
         <button type="cancel" pButton icon="pi pi-times" label="cancel" (click)='hideDialog()'></button>
       </div>
     </p-footer>

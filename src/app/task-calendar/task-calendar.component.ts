@@ -12,6 +12,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { LocalStorageService } from 'angular-web-storage';
 import { LocalStorageLabel } from '../LocalStorageLabel';
+import { BaseComponent } from '../base-component';
 
 
 @Component({
@@ -19,7 +20,7 @@ import { LocalStorageLabel } from '../LocalStorageLabel';
   templateUrl: './task-calendar.component.html',
   styleUrls: ['./task-calendar.component.css']
 })
-export class TaskCalendarComponent implements OnInit {
+export class TaskCalendarComponent extends BaseComponent implements OnInit {
 
   options: any;
 
@@ -37,6 +38,7 @@ export class TaskCalendarComponent implements OnInit {
     private msgsComponent: MsgsComponent,
     private developerService: DevelopersService,
     private tasksComponent: TasksComponent, private localStorage: LocalStorageService) {
+    super();
     this.developer = localStorage.get(LocalStorageLabel.USER);
   }
 
@@ -66,7 +68,7 @@ export class TaskCalendarComponent implements OnInit {
   }
   refreshData() {
     if (this.developer) {
-      this.developerService.getDeveloperWithName(this.developer).subscribe(developer => {
+      this.developerService.getDeveloperWithUserId(this.developer).subscribe(developer => {
         if (developer && developer[0]) {
           this.devId = developer[0].id;
           this.tasksService.getTasksForDev(developer[0].id).subscribe(tasks => this.displayTasks(tasks));

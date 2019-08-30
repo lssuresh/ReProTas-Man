@@ -106,15 +106,19 @@ export class ReleaseComponent implements OnInit {
   }
   createTasksInTree(tasks: Task[], releaseNode: ReProTasNode, applications: Map<string, ReProTasNode>) {
     tasks.forEach(item => {
-      var appNodeName = this.getAppNodeName(item.application);
-      var appNode = applications.get(appNodeName);
-      if (!appNode) {
-        appNode = new ReProTasNode(appNodeName, appNodeName, false);
-        applications.set(appNodeName, appNode);
+      // We want to add items only which does not have a project.
+      // If there is a project assigned then that task will be part of project.
+      if (!item.project) {
+        var appNodeName = this.getAppNodeName(item.application);
+        var appNode = applications.get(appNodeName);
+        if (!appNode) {
+          appNode = new ReProTasNode(appNodeName, appNodeName, false);
+          applications.set(appNodeName, appNode);
+        }
+        var taskNode = new ReProTasNode(item.name, item.name, true);
+        taskNode.task = item;
+        appNode.addChild(taskNode);
       }
-      var taskNode = new ReProTasNode(item.name, item.name, true);
-      taskNode.task = item;
-      appNode.addChild(taskNode);
 
     });
     this.addApplicationsToRelease(applications, releaseNode);

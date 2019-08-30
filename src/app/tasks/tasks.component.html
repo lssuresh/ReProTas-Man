@@ -59,14 +59,14 @@
     </tr>
   </ng-template>
   <ng-template pTemplate="summary" let-rowData>
-    <div style="text-align:left">
+    <div style="text-align:left" *ngIf='user'>
       <button type="button" pButton icon="pi pi-plus" (click)="showAddDialog()" label="Add New"></button>
       <button type="button" pButton icon="pi pi-pencil" (click)="editTask()" label="Edit"></button>
       <button type="button" pButton icon="pi pi-times" class="ui-button-danger" (click)="delete()"
         label="Delete"></button>
     </div>
-    <a routerLink="release?release={{releaseParam}}">Release</a>|
-    <a [routerLink]="['/tasks']" [queryParams]="{task: 'All'}">All Tasks</a>
+    <a [routerLink]="['/tasks']" [queryParams]="{task: 'All'}">All Tasks</a>|
+    <button type="button" pButton icon="pi pi-refresh" (click)="refreshTasks()"></button>
   </ng-template>
 </p-table>
 <div *ngIf="selectedTaskUIData && selectedTaskUIData.task" style="text-align:left">

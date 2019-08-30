@@ -2,6 +2,12 @@
   <h1>
     {{ title }}
   </h1>
+  <div *ngIf="!user" style="text-align:left">
+    <h4 style="color: maroon;">User Not Logged in. Please enter a valid username
+      <input type="text" pInputText [(ngModel)]="userName" /><button pButton type="button" label="Go"
+        (click)="validateUser()" icon="pi pi-check"></button>
+    </h4>
+  </div>
   <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
   <router-outlet></router-outlet>
 </div>

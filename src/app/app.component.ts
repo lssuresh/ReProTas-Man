@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { MsgsComponent } from './msgs/msgs.component'
 import { CommonDataComponent } from './common-data/common-data.component'
 import { TasksComponent } from './tasks/tasks.component';
-import { DevelopersComponent } from './developers/developers.component';
 import { TaskDialogComponent } from './tasks/task-dialog/task-dialog.component';
 import { MenuItem } from 'primeng/api';
 import { ActivatedRoute, Router, GuardsCheckEnd } from '@angular/router';
 import { LocalStorageService, SessionStorageService, LocalStorage, SessionStorage } from 'angular-web-storage';
 import { LocalStorageLabel } from './LocalStorageLabel';
+import { DevelopersService } from './developers/developers.service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +15,7 @@ import { LocalStorageLabel } from './LocalStorageLabel';
   styleUrls: [
     './app.component.css'
   ],
-  providers: [MsgsComponent, CommonDataComponent, TasksComponent, DevelopersComponent, TaskDialogComponent]
+  providers: [MsgsComponent, CommonDataComponent, TasksComponent, TaskDialogComponent]
 })
 export class AppComponent {
 
@@ -24,11 +24,13 @@ export class AppComponent {
 
   items: MenuItem[];
   activeItem: MenuItem;
+  userName: string;
 
   @LocalStorage() isAdmin: boolean;
   @LocalStorage() user: string;
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, private msgsComponent: MsgsComponent, private localStorage: LocalStorageService) {
+  constructor(private activatedRoute: ActivatedRoute, private router: Router, private msgsComponent: MsgsComponent,
+    private localStorage: LocalStorageService, private developerService: DevelopersService) {
     this.isAdmin = false;
     this.localStorage.set(LocalStorageLabel.USER, '');
   }
@@ -47,21 +49,31 @@ export class AppComponent {
       if (event instanceof GuardsCheckEnd) {
         var guardsCheckEvent = event;
         this.isAdmin = event.state.root.queryParams[LocalStorageLabel.IS_ADMIN] == "admin";
-        this.user = event.state.root.firstChild.params[LocalStorageLabel.USER];
+        this.userName = event.state.root.firstChild.params[LocalStorageLabel.USER];
         obs.unsubscribe();
         if (this.isAdmin) {
           this.items.push({ label: 'Developer', icon: 'pi pi-users', routerLink: 'developers' });
           this.items.push({ label: 'Common', icon: 'pi pi-th-large', routerLink: 'common-data' });
         }
-
-
+        this.validateUser();
       }
     });
 
     this.activeItem = this.items[0];
+  }
 
+  validateUser() {
+    this.developerService.getDeveloperWithUserId(this.userName).subscribe(dev => {
+      if (!dev || dev.length == 0) {
+        this.msgsComponent.showError("User invalid...please try again");
+        this.user = null;
+        this.router.navigate(['/']);
+      } else {
+        this.user = dev[0].userId;
+        this.router.navigate(['/', 'my-calendar']);
+      }
+    });
 
-    // this.developer = this.navigationEnd.snapshot.queryParams('developer');
   }
 }
 

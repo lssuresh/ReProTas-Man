@@ -8,6 +8,7 @@ import { MsgsComponent } from '../msgs/msgs.component';
 import { timer, Subject } from 'rxjs';
 import { ObjectFactory } from '../ObjectFactory';
 import { LocalStorage } from 'angular-web-storage';
+import { BaseComponent } from '../base-component';
 
 @Component({
   selector: 'app-developers',
@@ -15,7 +16,7 @@ import { LocalStorage } from 'angular-web-storage';
   styleUrls: ['./developers.component.css']
 })
 @Injectable()
-export class DevelopersComponent implements OnInit {
+export class DevelopersComponent extends BaseComponent implements OnInit {
 
   developers: Developer[];
 
@@ -49,6 +50,7 @@ export class DevelopersComponent implements OnInit {
 
   constructor(private pfb: FormBuilder, private developerService: DevelopersService,
     private msgsComponent: MsgsComponent, private commonDataComponent: CommonDataComponent) {
+    super();
     this.developers = [];
     this.developerListSubject = new Subject();
     this.developerListSubject.next(this.developers);
@@ -148,7 +150,6 @@ export class DevelopersComponent implements OnInit {
   onRowSelect() {
     if (this.selectedDeveloper) {
       this.addDeveloper = false;
-      this.selectedDeveloper.userId = 'Test';
       this.newDeveloper = ObjectFactory.createNewTypeFrom(this.selectedDeveloper, Developer);
       (<FormGroup>this.developerForm).setValue(this.selectedDeveloper, { onlySelf: true });
       this.displayDialog = true;

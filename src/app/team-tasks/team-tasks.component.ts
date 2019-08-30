@@ -14,13 +14,14 @@ import { TaskUIData } from '../tasks/TaskUIData';
 import { Developer } from '../developers/Developer';
 import { timer, Observable, forkJoin } from 'rxjs';
 import { DevelopersService } from '../developers/developers.service';
+import { BaseComponent } from '../base-component';
 
 @Component({
   selector: 'app-team-tasks',
   templateUrl: './team-tasks.component.html',
   styleUrls: ['./team-tasks.component.css']
 })
-export class TeamTasksComponent implements OnInit {
+export class TeamTasksComponent extends BaseComponent implements OnInit {
 
   weekStartRange = 3;
   weekEndRange = 1;
@@ -53,6 +54,7 @@ export class TeamTasksComponent implements OnInit {
   constructor(private tasksService: TasksService,
     private msgsComponent: MsgsComponent, private tasksComponent: TasksComponent,
     private confirmationService: ConfirmationService, private developerService: DevelopersService) {
+    super();
     //this.developerComponent.addConsumer(this);
     this.resetSessionData();
     //this.tasksComponent.refreshTasks();

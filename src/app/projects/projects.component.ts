@@ -11,6 +11,7 @@ import { MenuItem } from 'primeng/components/common/api';
 import { DataTable } from 'primeng/primeng';
 import { ActivatedRoute } from '@angular/router';
 import { LocalStorage } from 'angular-web-storage';
+import { BaseComponent } from '../base-component';
 
 @Component({
   selector: 'app-projects',
@@ -18,7 +19,7 @@ import { LocalStorage } from 'angular-web-storage';
   styleUrls: ['./projects.component.css'],
   providers: [FormBuilder]
 })
-export class ProjectsComponent implements OnInit {
+export class ProjectsComponent extends BaseComponent implements OnInit {
 
   projects: Project[];
 
@@ -58,6 +59,7 @@ export class ProjectsComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private pfb: FormBuilder, private projectService: ProjectsService,
     private msgsComponent: MsgsComponent, private commonDataComponent: CommonDataComponent) {
+    super();
     this.route.queryParams.subscribe(params => {
       this.statusParam = params['status'];
       this.projectParam = params['project'];
@@ -85,6 +87,8 @@ export class ProjectsComponent implements OnInit {
   }
 
   refreshProjects() {
+    this.newProjectForm();
+    this.commonDataComponent.refreshCommonData(true);
     this.projects = [];
     if (this.statusParam) {
       this.projectService.getProjectsWithStatus(this.statusParam).subscribe(projects => this.processProjects(projects));

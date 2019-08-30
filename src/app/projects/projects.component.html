@@ -56,13 +56,14 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="summary" let-rowData>
-        <div style="text-align:left">
+        <div style="text-align:left" *ngIf='user'>
             <button type="button" pButton icon="pi pi-plus" (click)="showAddDialog()" label="Add New"></button>
             <button type="button" pButton icon="pi pi-pencil" (click)="editProject()" label="Edit"></button>
             <button type="button" pButton icon="pi pi-times" class="ui-button-danger" (click)="delete()"
                 label="Delete"></button>
         </div>
-        <a href="/projects?status=Closed">Closed Projects</a>| <a href="/release?release={{releaseParam}}">Release</a>
+        <a href="/projects?status=Closed">Closed Projects</a>| <a href="/release?release={{releaseParam}}">Release</a>|
+        <button type="button" pButton icon="pi pi-refresh" (click)="refreshProjects()"></button>
     </ng-template>
 </p-table>
 <div *ngIf="selectedProject" style="text-align:left">
@@ -86,7 +87,7 @@
                     <label for="desc">*Desc</label>
                 </div>
                 <div class="ui-g-8">
-                    <textarea [rows]="3" [cols]="25" pInputTextarea id="desc" formControlName="desc"
+                    <textarea [rows]="3" [cols]="35" pInputTextarea id="desc" formControlName="desc"
                         autoResize="autoResize"></textarea>
                 </div>
             </div>
@@ -160,7 +161,7 @@
         </div>
         <p-footer>
             <div class="ui-dialog-buttonpane ui-helper-clearfix"
-                *ngIf="!selectedProject || selectedProject.status !='Closed'">
+                *ngIf="(!selectedProject || selectedProject.status !='Closed') && user">
                 <button type="submit" pButton icon="pi pi-check" label="Save" [disabled]="!projectForm.valid"></button>
             </div>
         </p-footer>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injectable } from '@angular/core';
 import { CommonDataService } from './common-data.service';
 import { CommonData } from './common-data';
 import { SingleCommonData } from './single-common-data';
@@ -11,9 +11,8 @@ import { DropDownCommonData } from './dropdown-common-data'
   templateUrl: './common-data.component.html',
   styleUrls: ['./common-data.component.css']
 })
+@Injectable()
 export class CommonDataComponent implements OnInit {
-
-
   RELEASES_KEY = 'Releases';
   PROJECT_STATUS_KEY = 'ProjectStatus';
   PROJECT_MANAGER_KEY = 'ProjectManager';
@@ -112,9 +111,6 @@ export class CommonDataComponent implements OnInit {
   loadeAllCommonData() {
     this.dropdownItemsMap.forEach((value: DropDownCommonData, key: string) => {
       value.itemList = this.createSelectItems(this.getCommonDataForType(key));
-      if (value.itemList) {
-        value.itemList.sort();
-      }
       this.dropdownItemSubjectMap.get(key).next(value);
     });
   }
@@ -134,6 +130,7 @@ export class CommonDataComponent implements OnInit {
   createSelectItems(items: string[]) {
     var selectedItems = [];
     if (items) {
+      items.sort();
       items.forEach(item => {
         selectedItems = [...selectedItems, { label: item, value: item }];
       });
