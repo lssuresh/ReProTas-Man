@@ -140,7 +140,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
 
   resetSessionData() {
     this.weekDates = new Map<string, any>();
-    this.columnsToDisplay = [{ field: 'devName', header: 'Developer' }, { field: this.firstColumnName, header: this.firstColumnName }];
+    this.columnsToDisplay = [{ field: 'devName', header: 'Developer' }];
     this.teamDevWeekTasks = [];
     this.weeks = [];
     this.selectedTask = new Task();
@@ -197,6 +197,8 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
           var startDate = moment(this.weekDates.get(item)[this.startDateKey]).format(this.dateFormat);
           var endDate = moment(this.weekDates.get(item)[this.endDateKey]).format(this.dateFormat);
           this.columnsToDisplay.push({ field: 'weekTask.get(' + item + ')', header: item + '  (' + startDate + ')' });
+        } else {
+          this.columnsToDisplay.push({ field: this.firstColumnName, header: this.firstColumnName });
         }
       });
     }
