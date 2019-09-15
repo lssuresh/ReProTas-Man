@@ -11,15 +11,22 @@
       <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
       <input pInputText type="text" (input)="dt.filter($event.target.value, 'devName', 'contains')"
         placeholder="Developer Filter" style="width:auto">
+      Past <input pInputText type="text" [(ngModel)]="weekStartRange" size="1">,
+      Future <input pInputText type="text" [(ngModel)]="weekEndRange" size="1"> Week(s).
       <button pButton type="button" class="ui-button-raised ui-button-rounded" icon="pi pi-refresh"
-        (click)="refreshViewData()" style="align-self: center"></button>
+        (click)="refreshViewData()" style="align-self: right"></button>
     </div>
 
   </ng-template>
   <ng-template pTemplate="header" let-columns>
     <tr #tr>
       <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
-        {{col.header}}
+        <span *ngIf='col.field == currentWeek' style="color:darkred; ">
+          {{col.header}}
+        </span>
+        <span *ngIf='col.field != currentWeek'>
+          {{col.header}}
+        </span>
         <p-sortIcon [field]="col.field" *ngIf='col.header=="Developer"'></p-sortIcon>
       </th>
     </tr>

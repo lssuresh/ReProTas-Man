@@ -10,6 +10,7 @@ export class Developer extends Base {
   workHours: string;
   status: string;
   userId: string;
+  type: string;
 
   constructor() {
     super(Developer.name);

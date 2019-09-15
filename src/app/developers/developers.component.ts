@@ -37,6 +37,7 @@ export class DevelopersComponent extends BaseComponent implements OnInit {
   @LocalStorage() isAdmin: boolean;
 
   columnsToDisplay: any[] = [
+    { field: 'type', header: 'Type' },
     { field: 'name', header: 'Name' },
     { field: 'userId', header: 'User Id' },
     { field: 'phone', header: 'Home Phone' },
@@ -92,6 +93,7 @@ export class DevelopersComponent extends BaseComponent implements OnInit {
     this.developerForm = this.pfb.group({
       'id': new FormControl(''),
       'elasticType': new FormControl(''),
+      'type': new FormControl('', Validators.required),
       'userId': new FormControl('', Validators.required),
       'updated_by': new FormControl(''),
       'updated_date': new FormControl(''),
@@ -150,6 +152,9 @@ export class DevelopersComponent extends BaseComponent implements OnInit {
   onRowSelect() {
     if (this.selectedDeveloper) {
       this.addDeveloper = false;
+      if (!this.selectedDeveloper.type) {
+        this.selectedDeveloper.type = 'Developer';
+      }
       this.newDeveloper = ObjectFactory.createNewTypeFrom(this.selectedDeveloper, Developer);
       (<FormGroup>this.developerForm).setValue(this.selectedDeveloper, { onlySelf: true });
       this.displayDialog = true;

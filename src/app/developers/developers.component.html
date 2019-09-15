@@ -39,10 +39,20 @@
 <div *ngIf="selectedDeveloper" style="text-align:left">
     {{selectedDeveloper.id}}
 </div>
-<p-dialog header="Developer Details" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
+<p-dialog header="User Details" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
     [style]="{width:'30%', height: '50%'}" [contentStyle]="{'overflow':'visible'}">
     <form [formGroup]="developerForm" (ngSubmit)="save()">
         <div class="ui-g ui-fluid" *ngIf="newDeveloper">
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="Type">*Type</label>
+                </div>
+                <div class="ui-g-8 ui-dropdown-item" ui-dropdown-item>
+                    <p-dropdown [options]="commonDataComponent.userTypes.itemList" placeholder="Select Type"
+                        formControlName="type">
+                    </p-dropdown>
+                </div>
+            </div>
             <div class="ui-g-12">
                 <div class="ui-g-4">
                     <label for="Name">*Name</label>
@@ -97,7 +107,7 @@
                     <label for="status">*Status</label>
                 </div>
                 <div class="ui-g-8 ui-dropdown-item" ui-dropdown-item>
-                    <p-dropdown [options]="commonDataComponent.developerStatuses.itemList" placeholder="Select Status"
+                    <p-dropdown [options]="commonDataComponent.userStatuses.itemList" placeholder="Select Status"
                         formControlName="status">
                     </p-dropdown>
                 </div>

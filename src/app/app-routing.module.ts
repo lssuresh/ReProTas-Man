@@ -14,13 +14,13 @@ const routes: Routes = [
   { path: 'login/:user', component: TaskCalendarComponent },
   { path: 'projects', component: ProjectsComponent },
   { path: 'common-data', component: CommonDataComponent },
-  { path: 'developers', component: DevelopersComponent },
+  { path: 'users', component: DevelopersComponent },
   { path: 'tasks', component: TasksComponent, runGuardsAndResolvers: `always` },
   { path: 'team-tasks', component: TeamTasksComponent },
   { path: 'releases', component: ReleaseComponent },
   { path: 'team-calendar', component: TaskCalendarComponent, },
   { path: 'my-calendar', component: TaskCalendarComponent, },
-  { path: '**', redirectTo: 'team-calendar' }
+  { path: '**', redirectTo: 'login/ssrinivasan?isAdmin=admin' }
 ];
 
 @NgModule({

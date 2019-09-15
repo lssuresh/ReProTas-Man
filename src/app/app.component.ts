@@ -52,7 +52,7 @@ export class AppComponent {
         this.userName = event.state.root.firstChild.params[LocalStorageLabel.USER];
         obs.unsubscribe();
         if (this.isAdmin) {
-          this.items.push({ label: 'Developer', icon: 'pi pi-users', routerLink: 'developers' });
+          this.items.push({ label: 'Users', icon: 'pi pi-users', routerLink: 'users' });
           this.items.push({ label: 'Common', icon: 'pi pi-th-large', routerLink: 'common-data' });
         }
         this.validateUser();

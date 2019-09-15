@@ -5,8 +5,6 @@ import { TasksService } from '../tasks/tasks.service';
 import { Task } from '../tasks/task';
 import { TasksComponent } from '../tasks/tasks.component';
 
-import { DevelopersComponent } from '../developers/developers.component';
-
 import * as moment from 'moment';
 import { DevWeekTasks } from './dev-week-tasks';
 import { MenuItem, ConfirmationService } from 'primeng/api';
@@ -15,6 +13,7 @@ import { Developer } from '../developers/Developer';
 import { timer, Observable, forkJoin } from 'rxjs';
 import { DevelopersService } from '../developers/developers.service';
 import { BaseComponent } from '../base-component';
+import { containerRefreshEnd } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-team-tasks',
@@ -25,6 +24,8 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
 
   weekStartRange = 3;
   weekEndRange = 1;
+  currentWeek = '';
+  displayOnlyType = 'Developer';
 
   dateFormat = "MM/DD/YYYY";
   weekStart = "Monday";
@@ -103,6 +104,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
       if (this.tasks) {
         this.rebuildUI();
         this.refreshDevNames();
+        this.taskPrefillForDev();
       }
 
       this.constructColumns();
@@ -149,6 +151,10 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     this.selectedWeek = "";
   }
 
+  taskDevToBeDisplayed(developer: Developer) {
+    return developer && developer.type == this.displayOnlyType;
+  }
+
   // re-lays out the tasks into matrix data by putting appropriate task in 
   // right index for developer
   rebuildUI() {
@@ -162,12 +168,17 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     var rangeEnd = rangeEndMoment.endOf('day');
 
     this.tasks.forEach(taskItem => {
+
+      if (!this.taskDevToBeDisplayed(this.getDevForId(taskItem.developer))) {
+        return;
+      }
+
       var devWeekTasks = this.getDevWeekTasks(taskItem.developer);
       var weekLbl = this.firstColumnName;
 
       // we add ot the week label only if its within our range
       // else we show in common label as OPEN
-      if (taskItem.start_date && moment(taskItem.start_date).isAfter(rangeStart)) {
+      if (taskItem.start_date && moment(taskItem.start_date).isAfter(rangeStart) && moment(taskItem.start_date).isBefore(rangeEnd)) {
         var weekNum = moment(taskItem.start_date).format('W');
         weekLbl = this.getWeekLabel(weekNum);
         this.weekDates.set(weekLbl, {
@@ -187,16 +198,39 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     });
 
   }
+  // Make sure each developer has representation.
+  //If any dev has no task then this one puts a dummy taks
+  taskPrefillForDev() {
+    this.developers.forEach(developer => {
+      if (!this.taskDevToBeDisplayed(developer)) {
+        return;
+      }
+
+      if (!this.getDevWeekTasks(developer.name)) {
+        var devWeekTasks = new DevWeekTasks(developer.name);
+        this.teamDevWeekTasks.push(devWeekTasks);
+        var dummyTask = new Task();
+        dummyTask.name = '';
+        devWeekTasks.addTaskForWeek(this.firstColumnName, dummyTask);
+      }
+    });
+  }
 
   constructColumns() {
     if (this.weeks) {
       this.weeks.sort();
+      // week starts on sunday.
+      var currentWeekStart = moment().startOf('week').add(1, 'd').format(this.dateFormat);
       //this.columnsToDisplay.push({ field: this.firstColumnName, header: this.firstColumnName });
       this.weeks.forEach(item => {
         if (item != this.firstColumnName) {
           var startDate = moment(this.weekDates.get(item)[this.startDateKey]).format(this.dateFormat);
           var endDate = moment(this.weekDates.get(item)[this.endDateKey]).format(this.dateFormat);
-          this.columnsToDisplay.push({ field: 'weekTask.get(' + item + ')', header: item + '  (' + startDate + ')' });
+          var fieldVal = 'weekTask.get(' + item + ')';
+          if (startDate == currentWeekStart) {
+            this.currentWeek = fieldVal
+          }
+          this.columnsToDisplay.push({ field: fieldVal, header: item + '  (' + startDate + ')' });
         } else {
           this.columnsToDisplay.push({ field: this.firstColumnName, header: this.firstColumnName });
         }
@@ -242,6 +276,16 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
       }
     });
     return name;
+  }
+  getDevForId(id: string): Developer {
+    var dev;
+    this.developers.forEach(item => {
+      if (item.id == id) {
+        dev = item;
+        return;
+      }
+    });
+    return dev;
   }
 
 

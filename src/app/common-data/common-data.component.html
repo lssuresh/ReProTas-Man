@@ -29,14 +29,23 @@
       </div>
       <p-listbox [options]="projectManagers.itemList" [(ngModel)]="projectManagers.selectedItem"></p-listbox>
     </p-accordionTab>
-    <p-accordionTab header="Developer Status">
+    <p-accordionTab header="User Status">
       <div class="ui-g">
-        <input type="text" pInputText [(ngModel)]="developerStatuses.selectedItem" />
-        <button pButton type="button" icon="pi pi-plus" label="Add" (click)="addData(DEVELOPER_STATUS)"></button>
-        <button pButton type="button" icon="pi pi-trash" label="Delete" (click)="deleteData(DEVELOPER_STATUS)"></button>
-        <button pButton type="button" icon="pi pi-ban" label="Clear" (click)="clearData(DEVELOPER_STATUS)"></button>
+        <input type="text" pInputText [(ngModel)]="userStatuses.selectedItem" />
+        <button pButton type="button" icon="pi pi-plus" label="Add" (click)="addData(USER_STATUS)"></button>
+        <button pButton type="button" icon="pi pi-trash" label="Delete" (click)="deleteData(USER_STATUS)"></button>
+        <button pButton type="button" icon="pi pi-ban" label="Clear" (click)="clearData(USER_STATUS)"></button>
       </div>
-      <p-listbox [options]="developerStatuses.itemList" [(ngModel)]="developerStatuses.selectedItem"></p-listbox>
+      <p-listbox [options]="userStatuses.itemList" [(ngModel)]="userStatuses.selectedItem"></p-listbox>
+    </p-accordionTab>
+    <p-accordionTab header="User Types">
+      <div class="ui-g">
+        <input type="text" pInputText [(ngModel)]="userTypes.selectedItem" />
+        <button pButton type="button" icon="pi pi-plus" label="Add" (click)="addData(USER_TYPE)"></button>
+        <button pButton type="button" icon="pi pi-trash" label="Delete" (click)="deleteData(USER_TYPE)"></button>
+        <button pButton type="button" icon="pi pi-ban" label="Clear" (click)="clearData(USER_TYPE)"></button>
+      </div>
+      <p-listbox [options]="userTypes.itemList" [(ngModel)]="userTypes.selectedItem"></p-listbox>
     </p-accordionTab>
     <p-accordionTab header="Applications">
       <div class="ui-g">

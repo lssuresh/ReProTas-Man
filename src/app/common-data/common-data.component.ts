@@ -16,9 +16,10 @@ export class CommonDataComponent implements OnInit {
   RELEASES_KEY = 'Releases';
   PROJECT_STATUS_KEY = 'ProjectStatus';
   PROJECT_MANAGER_KEY = 'ProjectManager';
-  DEVELOPER_STATUS = 'DeveloperStatus';
+  USER_STATUS = 'DeveloperStatus';
   APPLICATIONS = "Applications";
   TASK_STATUS = 'TaskStatus';
+  USER_TYPE = 'UserType';
 
   private commonData: CommonData;
 
@@ -29,26 +30,29 @@ export class CommonDataComponent implements OnInit {
   releases: DropDownCommonData = { selectedItem: '', itemList: [] };
   projectManagers: DropDownCommonData = { selectedItem: '', itemList: [] };
   projectStatuses: DropDownCommonData = { selectedItem: '', itemList: [] };
-  developerStatuses: DropDownCommonData = { selectedItem: '', itemList: [] };
+  userStatuses: DropDownCommonData = { selectedItem: '', itemList: [] };
   applications: DropDownCommonData = { selectedItem: '', itemList: [] };
   taskStatuses: DropDownCommonData = { selectedItem: '', itemList: [] };
+  userTypes: DropDownCommonData = { selectedItem: '', itemList: [] };
 
   constructor(private commonDataService: CommonDataService, private msgsComponent: MsgsComponent) {
     this.dropdownItemsMap = new Map<string, DropDownCommonData>();
     this.dropdownItemsMap.set(this.RELEASES_KEY, this.releases);
     this.dropdownItemsMap.set(this.PROJECT_MANAGER_KEY, this.projectManagers);
     this.dropdownItemsMap.set(this.PROJECT_STATUS_KEY, this.projectStatuses);
-    this.dropdownItemsMap.set(this.DEVELOPER_STATUS, this.developerStatuses);
+    this.dropdownItemsMap.set(this.USER_STATUS, this.userStatuses);
     this.dropdownItemsMap.set(this.APPLICATIONS, this.applications);
     this.dropdownItemsMap.set(this.TASK_STATUS, this.taskStatuses);
+    this.dropdownItemsMap.set(this.USER_TYPE, this.userTypes);
 
     this.dropdownItemSubjectMap = new Map<string, BehaviorSubject<DropDownCommonData>>();
     this.dropdownItemSubjectMap.set(this.RELEASES_KEY, new BehaviorSubject(this.releases));
     this.dropdownItemSubjectMap.set(this.PROJECT_MANAGER_KEY, new BehaviorSubject(this.projectManagers));
     this.dropdownItemSubjectMap.set(this.PROJECT_STATUS_KEY, new BehaviorSubject(this.projectStatuses));
-    this.dropdownItemSubjectMap.set(this.DEVELOPER_STATUS, new BehaviorSubject(this.developerStatuses));
+    this.dropdownItemSubjectMap.set(this.USER_STATUS, new BehaviorSubject(this.userStatuses));
     this.dropdownItemSubjectMap.set(this.APPLICATIONS, new BehaviorSubject(this.applications));
     this.dropdownItemSubjectMap.set(this.TASK_STATUS, new BehaviorSubject(this.taskStatuses));
+    this.dropdownItemSubjectMap.set(this.USER_TYPE, new BehaviorSubject(this.userTypes));
 
     this.createCommonData();
 
