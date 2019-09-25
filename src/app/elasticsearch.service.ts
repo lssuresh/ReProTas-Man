@@ -125,6 +125,24 @@ export class ElasticsearchService {
     }
   }
 
+  createMatchValueFilter(eq: ElasticQuery, key: string, valueArr: string[]): ElasticQuery {
+    if (!eq) {
+      eq = new ElasticQuery();
+    }
+    eq.addSearchFieldWithValues(key, valueArr);
+    return eq;
+  }
+  createMatchValueNotInFilter(eq: ElasticQuery, key: string, valueArr: string[]): ElasticQuery {
+    if (!eq) {
+      eq = new ElasticQuery();
+    }
+    eq.addSearchValuesNotIn(key, valueArr);
+    return eq;
+  }
+  postWithQuery(_type: any, eq: ElasticQuery): Observable<any[]> {
+    return this.postAndGetDocumentsAsArray(_type, this.getPOSTSearchURL(), eq.createQuery());
+  }
+
   matchValue(_type: any, key: string, valueArr: string[]) {
     if (_type && key && valueArr) {
       var eq = new ElasticQuery();

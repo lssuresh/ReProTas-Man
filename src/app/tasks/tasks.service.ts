@@ -46,17 +46,23 @@ export class TasksService extends BaseService {
     }
   }
   getOpenTasks(): Observable<Task[]> {
-    return this.elasticService.matchNotInValue(Task, "status", ["Closed"]);
+    return this.elasticService.matchNotInValue(Task, "status", ["Closed", "Archived"]);
   }
   getOpenTasksBetweenDates(rangeStart: Date, rangeEnd: Date): Observable<Task[]> {
-    return this.elasticService.matchNotInValueAndRange(Task, "status", ["Closed"], 'start_date', rangeStart, rangeEnd)
+    return this.elasticService.matchNotInValueAndRange(Task, "status", ["Closed", "Archived"], 'start_date', rangeStart, rangeEnd)
   }
 
+  // does not retrieve the closed and archived task.
   getTasksForRelease(release) {
-    return this.elasticService.matchValue(Task, "release", [release]);
+    var eq = this.elasticService.createMatchValueFilter(null, "release", [release]);
+    eq = this.elasticService.createMatchValueNotInFilter(eq, "status", ["Closed", "Archived"]);
+    return this.elasticService.postWithQuery(Task, eq);
   }
 
+  // will not retrieve closed and archived.
   getTasksForDev(developerId) {
-    return this.elasticService.matchValue(Task, "developer", [developerId]);
+    var eq = this.elasticService.createMatchValueFilter(null, "developer", [developerId]);
+    eq = this.elasticService.createMatchValueNotInFilter(eq, "status", ["Archived"]);
+    return this.elasticService.postWithQuery(Task, eq);
   }
 }

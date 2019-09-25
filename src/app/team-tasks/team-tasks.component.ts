@@ -14,6 +14,7 @@ import { timer, Observable, forkJoin } from 'rxjs';
 import { DevelopersService } from '../developers/developers.service';
 import { BaseComponent } from '../base-component';
 import { containerRefreshEnd } from '@angular/core/src/render3';
+import { Util } from '../Util';
 
 @Component({
   selector: 'app-team-tasks',
@@ -169,7 +170,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
 
     this.tasks.forEach(taskItem => {
 
-      if (!this.taskDevToBeDisplayed(this.getDevForId(taskItem.developer))) {
+      if (!this.taskDevToBeDisplayed(Util.getDevForId(taskItem.developer, this.developers))) {
         return;
       }
 
@@ -260,33 +261,13 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
   }
   refreshDevNames() {
     this.teamDevWeekTasks.forEach(item => {
-      var devname = this.getDevNameForId(item.devName);
+      var devname = Util.getDevNameForId(item.devName, this.developers);
       if (devname) {
         item.devName = devname;
       }
     });
   }
 
-  getDevNameForId(id: string): string {
-    var name = "";
-    this.developers.forEach(item => {
-      if (item.id == id) {
-        name = item.name;
-        return;
-      }
-    });
-    return name;
-  }
-  getDevForId(id: string): Developer {
-    var dev;
-    this.developers.forEach(item => {
-      if (item.id == id) {
-        dev = item;
-        return;
-      }
-    });
-    return dev;
-  }
 
 
   saveTask(devName: string, week: string, taskIndex: number) {
@@ -380,7 +361,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
       if (this.selectedWeek) {
         startDate = this.weekDates.get(this.selectedWeek)[this.startDateKey];
       }
-      this.tasksComponent.showAddDialogWithDateAndDev(startDate, this.getDevNameForId(this.selectedDevName));
+      this.tasksComponent.showAddDialogWithDateAndDev(startDate, Util.getIdForDevName(this.selectedDevName, this.developers));
     }
     console.log(event);
   }

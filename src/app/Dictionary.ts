@@ -6,7 +6,7 @@ interface IDictionary {
     keys(): string[];
     values(): any[];
 }
-export class Dictionary {
+export class Dictionary1 {
 
     _keys: string[] = [];
     _values: any[] = [];
