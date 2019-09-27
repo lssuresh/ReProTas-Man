@@ -1,6 +1,23 @@
 import { Developer } from './developers/Developer';
+import { Task } from './tasks/task';
 
 export class Util {
+    static getDeveloperWithUserId(userId: string, developers: Developer[]): Developer {
+        if (!developers) {
+            return null;
+        }
+        var dev;
+        developers.forEach(item => {
+            if (item.userId == userId) {
+                dev = item;
+                return;
+            }
+        });
+        return dev;
+    }
+    static isTaskCompleted(task: Task) {
+        return task.status == "Completed" || task.status == "Closed";
+    }
 
     static isDate(val): boolean {
         return val instanceof Date;

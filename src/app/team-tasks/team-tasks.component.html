@@ -45,6 +45,12 @@
               (keydown.enter)="saveTask(rowData.devName, col, taskIndex)">
           </ng-template>
           <ng-template pTemplate="output">
+            <p *ngIf="isTaskCompleted(rowData.weekTask.get(col), taskIndex); else non_completed_task"
+              style="color:rgb(51, 167, 13)">
+              {{getData(rowData.weekTask.get(col), taskIndex)}}
+            </p>
+          </ng-template>
+          <ng-template #non_completed_task>
             {{getData(rowData.weekTask.get(col), taskIndex)}}
           </ng-template>
         </p-cellEditor>

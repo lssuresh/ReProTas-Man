@@ -65,4 +65,10 @@ export class TasksService extends BaseService {
     eq = this.elasticService.createMatchValueNotInFilter(eq, "status", ["Archived"]);
     return this.elasticService.postWithQuery(Task, eq);
   }
+
+  getTasksWithStatus(developerId, status): Observable<Task[]> {
+    var eq = this.elasticService.createMatchValueFilter(null, "developer", [developerId]);
+    eq = this.elasticService.createMatchValueFilter(eq, "status", [status]);
+    return this.elasticService.postWithQuery(Task, eq);
+  }
 }

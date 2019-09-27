@@ -249,6 +249,16 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     }
   }
 
+
+
+  isTaskCompleted(tasks: Task[], index: number): boolean {
+    if (tasks && tasks.length > index) {
+      return Util.isTaskCompleted(tasks[index]);
+    }
+
+    return false;
+  }
+
   getDevName(devWeekTasks: DevWeekTasks) {
     if (devWeekTasks)
       return devWeekTasks.devName;

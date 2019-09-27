@@ -17,6 +17,7 @@ import { LocalStorageService } from 'angular-web-storage';
 import { LocalStorageLabel } from '../LocalStorageLabel';
 import { DevHelper } from '../developers/DevHelper';
 import { BaseComponent } from '../base-component';
+import { Util } from '../Util';
 
 @Component({
   selector: 'app-tasks',
@@ -41,6 +42,7 @@ export class TasksComponent extends BaseComponent implements OnInit {
 
   taskParamSubject;
   taskParam: string;
+  taskStatusParam: string;
   developerParam: string;
   allTasks: boolean
 
@@ -72,11 +74,16 @@ export class TasksComponent extends BaseComponent implements OnInit {
     super();
     this.developerParam = localStorage.get(LocalStorageLabel.USER);
     this.route.queryParams.subscribe(params => {
-      if (params['task'] && this.taskParam != params['task']) {
+      this.taskParam = null;
+      this.taskStatusParam = null;
+      if (params['task'] && this.taskParam != params['task'] && params['task'].length > 0) {
         this.taskParam = params['task'];
-        this.refreshTasks();
       }
-
+      if (params['status'] && this.taskStatusParam != params['status'] && params['status'].length > 0) {
+        this.taskStatusParam = params['status'];
+      }
+      this.developerParam = localStorage.get(LocalStorageLabel.USER);
+      this.refreshTasks();
     });
 
     this.developers = [];
@@ -84,7 +91,7 @@ export class TasksComponent extends BaseComponent implements OnInit {
     this.tasks = [];
     this.loadProjects();
     this.loadDevelopers();
-    this.refreshTasks();
+    //this.refreshTasks();
     this.commonDataComponent.refreshCommonData();
     this.reset(null);
   }
@@ -106,25 +113,33 @@ export class TasksComponent extends BaseComponent implements OnInit {
     });
   }
   loadTasks() {
-    if (this.developerParam && this.taskParam != "All") {
-      if (this.developers && this.developers.length > 0) {
-        var dev = this.developers.filter(item => item.userId == this.developerParam);
-        if (dev && dev.length > 0) {
-          this.tasksService.getTasksForDev(dev[0].id).subscribe(tasks => this.displayTasks(tasks));
-        } else {
-          this.msgsComponent.showError("Invalid dev name");
-        }
+
+    // ALL Tasks displays everything.
+    // Archive displays only Archived Tasks
+    // If dev is set and task status is being requested use that
+    if (this.developerParam && this.taskStatusParam) {
+      var developer = Util.getDeveloperWithUserId(this.developerParam, this.developers);
+      if (developer) {
+        this.tasksService.getTasksWithStatus(developer.id, this.taskStatusParam).subscribe(tasks => this.displayTasks(tasks));
+      }
+    } else if (this.developerParam && this.taskParam != "All") {
+      // If dev is selected and the task filter is set to ALL then display everything
+      if (this.developers) {
+        var developer = Util.getDeveloperWithUserId(this.developerParam, this.developers);
+        this.tasksService.getTasksForDev(developer.id).subscribe(tasks => this.displayTasks(tasks));
       } else {
-        this.developersService.getDeveloperWithUserId(this.developerParam).subscribe(developer => {
-          if (developer) {
-            this.tasksService.getTasksForDev(developer[0].id).subscribe(tasks => this.displayTasks(tasks));
+        this.developersService.getDeveloperWithUserId(this.developerParam).subscribe(developers => {
+          if (developers && developers.length > 0) {
+            this.tasksService.getTasksForDev(developers[0].id).subscribe(tasks => this.displayTasks(tasks));
           }
         });
       }
-    } else {
+    } else {  // BY deault we load all tasks for all devs
       this.tasksService.loadTasks().subscribe(tasks => this.displayTasks(tasks));
     }
   }
+
+
   displayTasks(tasks: Task[]) {
     console.log("Retrieved Tasks ===>" + tasks);
     tasks.sort((a, b) => {

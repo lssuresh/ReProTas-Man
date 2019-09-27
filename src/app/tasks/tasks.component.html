@@ -65,7 +65,9 @@
       <button type="button" pButton icon="pi pi-times" class="ui-button-danger" (click)="delete()"
         label="Delete"></button>
     </div>
-    <a [routerLink]="['/tasks']" [queryParams]="{task: 'All'}">All Tasks</a>|
+    <a [routerLink]="['/tasks']">My Task</a>|
+    <a [routerLink]="['/tasks']" [queryParams]="{task: 'All', status: ''}">All Tasks</a>|
+    <a [routerLink]="['/tasks']" [queryParams]="{status: 'Archived', task: ''}">Archive</a>|
     <button type="button" pButton icon="pi pi-refresh" (click)="refreshTasks()"></button>
   </ng-template>
 </p-table>
