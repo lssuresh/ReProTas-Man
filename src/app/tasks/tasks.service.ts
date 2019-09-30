@@ -71,4 +71,7 @@ export class TasksService extends BaseService {
     eq = this.elasticService.createMatchValueFilter(eq, "status", [status]);
     return this.elasticService.postWithQuery(Task, eq);
   }
+  getTasksForProjectId(projectId: string) {
+    return this.elasticService.matchValue(Task, "project", [projectId]);
+  }
 }

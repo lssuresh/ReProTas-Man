@@ -13,7 +13,6 @@ import { Developer } from '../developers/Developer';
 import { timer, Observable, forkJoin } from 'rxjs';
 import { DevelopersService } from '../developers/developers.service';
 import { BaseComponent } from '../base-component';
-import { containerRefreshEnd } from '@angular/core/src/render3';
 import { Util } from '../Util';
 
 @Component({
@@ -27,10 +26,15 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
   weekEndRange = 1;
   currentWeek = '';
   displayOnlyType = 'Developer';
+  TASK_OUT_LABEL = 'OUT';
+  TASK_SUPPORT_LABEL = 'SUPPORT';
+
+  GEN_TASK_LABEL = "GEN";
 
   dateFormat = "MM/DD/YYYY";
   weekStart = "Monday";
   weekEnd = "Friday";
+  SUPORT_END_DAY = "Sunday";
   startDateKey = 'start_date';
   endDateKey = 'end_date';
   firstColumnName = "Open";
@@ -72,6 +76,8 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     this.menuItems = [
       { label: 'New ', icon: 'pi pi-plus', command: (event) => this.showAddDialog() },
       { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.tasksComponent.displayDialog = true },
+      { label: 'Out', icon: 'pi pi-ban', command: (event) => this.addGeneralTask(this.TASK_OUT_LABEL) },
+      { label: 'Support', icon: 'pi pi-clock', command: (event) => this.addGeneralTask(this.TASK_SUPPORT_LABEL) },
       { label: 'Delete', icon: 'pi pi-times', command: (event) => this.deleteTask() }
     ];
   }
@@ -155,6 +161,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
   taskDevToBeDisplayed(developer: Developer) {
     return developer && developer.type == this.displayOnlyType;
   }
+
 
   // re-lays out the tasks into matrix data by putting appropriate task in 
   // right index for developer
@@ -241,15 +248,37 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
   getWeekLabel(weekNum: string) {
     return "Week" + weekNum;
   }
+
+  getStartAndEndDate(task: Task) {
+    var label = ' ';
+    if (task.start_date) {
+      label = label + moment(task.start_date).format('MM/DD');
+    }
+    if (task.end_date) {
+      label = label + " - " + moment(task.end_date).format('MM/DD');
+    }
+    return label;
+  }
+  getDataFormattedForGeneralTask(tasks: Task[], index: number) {
+    if (tasks && tasks.length > index) {
+      return tasks[index].name + this.getStartAndEndDate(tasks[index]);
+    }
+
+    return this.GEN_TASK_LABEL;
+  }
   getData(tasks: Task[], index: number) {
     if (tasks && tasks.length > index) {
       return tasks[index].name;
-    } else {
-      return " ";
     }
+    return " ";
   }
 
-
+  isOutTask(tasks: Task[], index: number): boolean {
+    return (tasks && tasks.length > index && tasks[index].name == this.TASK_OUT_LABEL);
+  }
+  isSupportTask(tasks: Task[], index: number): boolean {
+    return (tasks && tasks.length > index && tasks[index].name == this.TASK_SUPPORT_LABEL);
+  }
 
   isTaskCompleted(tasks: Task[], index: number): boolean {
     if (tasks && tasks.length > index) {
@@ -389,6 +418,30 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     this.tasksComponent.selectedTaskUIData = taskUIData;
     this.selectedTask = new Task();
     this.tasksComponent.displayDialog = true;
+  }
+
+  addGeneralTask(label: string) {
+    var task = new Task();
+    task.name = label;
+
+    if (label == this.TASK_SUPPORT_LABEL) {
+      // start date is Monday of current week
+      var currentWeekStart = moment().day(this.weekStart);
+      task.start_date = currentWeekStart.toDate();
+
+      // task end date is Sunday
+      task.end_date = currentWeekStart.add(6, 'days').toDate();
+    } else {
+      task.start_date = new Date();
+      task.end_date = moment(task.start_date).add(1, 'days').toDate();
+    }
+    task.developer = Util.getIdForDevName(this.selectedDevName, this.developers);
+    this.tasksService.addTask(task).subscribe(
+      data => {
+        console.log(data);
+        this.msgsComponent.showInfo('Task data Saved!');
+        this.tasks.push(task);
+      });
   }
 
   deleteTask() {

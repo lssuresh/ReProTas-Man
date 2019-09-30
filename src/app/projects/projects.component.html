@@ -48,10 +48,19 @@
                     {{rowData[col.field] | date:'MM/dd/yyyy' : 'UTC' }}
                 </span>
                 <ng-template #elseDateBlock>
+                    <ng-container *ngIf="col.field == 'name' ;else other_fields">
+                        <a [routerLink]="['/tasks']" [queryParams]="{project: rowData[col.field], task: ''}">
+                            {{rowData[col.field] }}
+                        </a>
+                    </ng-container>
+                </ng-template>
+                <ng-template #other_fields>
                     <span>
                         {{rowData[col.field] }}
                     </span>
                 </ng-template>
+
+
             </td>
         </tr>
     </ng-template>
@@ -62,7 +71,9 @@
             <button type="button" pButton icon="pi pi-times" class="ui-button-danger" (click)="delete()"
                 label="Delete"></button>
         </div>
-        <a href="/projects?status=Closed">Closed Projects</a>| <a href="/release?release={{releaseParam}}">Release</a>|
+        <a [routerLink]="['/projects']">Open Projects</a>|
+        <a [routerLink]="['/projects']" [queryParams]="{status: 'Closed'}">Closed Projects</a>|
+        <a [routerLink]="['/release']" [queryParams]="{release: releaseParam}">Release</a>|
         <button type="button" pButton icon="pi pi-refresh" (click)="refreshProjects()"></button>
     </ng-template>
 </p-table>

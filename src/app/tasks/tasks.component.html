@@ -5,7 +5,7 @@
     <div style="text-align: right">
       <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
       <input type="text" pInputText size="50" placeholder="Global Filter"
-        (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+        (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto" [(ngModel)]="taskFilter">
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>
@@ -66,8 +66,8 @@
         label="Delete"></button>
     </div>
     <a [routerLink]="['/tasks']">My Task</a>|
-    <a [routerLink]="['/tasks']" [queryParams]="{task: 'All', status: ''}">All Tasks</a>|
-    <a [routerLink]="['/tasks']" [queryParams]="{status: 'Archived', task: ''}">Archive</a>|
+    <a [routerLink]="['/tasks']" [queryParams]="{task: 'All'}">All Tasks</a>|
+    <a [routerLink]="['/tasks']" [queryParams]="{status: 'Archived', task: '', project: ''}">Archive</a>|
     <button type="button" pButton icon="pi pi-refresh" (click)="refreshTasks()"></button>
   </ng-template>
 </p-table>

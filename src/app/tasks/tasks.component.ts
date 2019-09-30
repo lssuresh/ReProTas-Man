@@ -13,11 +13,12 @@ import { DevelopersService } from '../developers/developers.service';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 import { ActivatedRoute } from '@angular/router';
 
-import { LocalStorageService } from 'angular-web-storage';
+import { LocalStorageService, LocalStorage } from 'angular-web-storage';
 import { LocalStorageLabel } from '../LocalStorageLabel';
 import { DevHelper } from '../developers/DevHelper';
 import { BaseComponent } from '../base-component';
 import { Util } from '../Util';
+import { Table } from 'primeng/components/table/table';
 
 @Component({
   selector: 'app-tasks',
@@ -44,9 +45,11 @@ export class TasksComponent extends BaseComponent implements OnInit {
   taskParam: string;
   taskStatusParam: string;
   developerParam: string;
-  allTasks: boolean
+  projectParam: string;
+  @LocalStorage() taskFilter: string;
 
   @ViewChild('taskDialog') taskDialog: TaskDialogComponent;
+  @ViewChild('dt') dataTable: Table;
 
 
   columnsToDisplay: any[] = [
@@ -73,27 +76,32 @@ export class TasksComponent extends BaseComponent implements OnInit {
     private developersService: DevelopersService, private localStorage: LocalStorageService) {
     super();
     this.developerParam = localStorage.get(LocalStorageLabel.USER);
+    this.developers = [];
+    this.projects = [];
+    this.tasks = [];
+    this.loadProjects();
+
     this.route.queryParams.subscribe(params => {
       this.taskParam = null;
       this.taskStatusParam = null;
+      this.developerParam = null;
+      this.projectParam = null;
       if (params['task'] && this.taskParam != params['task'] && params['task'].length > 0) {
         this.taskParam = params['task'];
       }
       if (params['status'] && this.taskStatusParam != params['status'] && params['status'].length > 0) {
         this.taskStatusParam = params['status'];
       }
+      if (params['project'] && this.taskStatusParam != params['project'] && params['project'].length > 0) {
+        this.projectParam = params['project'];
+      }
       this.developerParam = localStorage.get(LocalStorageLabel.USER);
-      this.refreshTasks();
-    });
 
-    this.developers = [];
-    this.projects = [];
-    this.tasks = [];
-    this.loadProjects();
-    this.loadDevelopers();
-    //this.refreshTasks();
-    this.commonDataComponent.refreshCommonData();
-    this.reset(null);
+      this.refreshTasks();
+      this.commonDataComponent.refreshCommonData();
+      this.reset(null);
+
+    });
   }
 
   ngOnInit() {
@@ -106,41 +114,48 @@ export class TasksComponent extends BaseComponent implements OnInit {
       this.buildUIProjectData();
     });
   }
-  loadDevelopers() {
-    this.developersService.getActiveDevelopers().subscribe(data => {
-      this.developers = data;
-      this.buildUIDevData();
-    });
-  }
   loadTasks() {
 
-    // ALL Tasks displays everything.
-    // Archive displays only Archived Tasks
-    // If dev is set and task status is being requested use that
-    if (this.developerParam && this.taskStatusParam) {
-      var developer = Util.getDeveloperWithUserId(this.developerParam, this.developers);
-      if (developer) {
-        this.tasksService.getTasksWithStatus(developer.id, this.taskStatusParam).subscribe(tasks => this.displayTasks(tasks));
-      }
-    } else if (this.developerParam && this.taskParam != "All") {
-      // If dev is selected and the task filter is set to ALL then display everything
-      if (this.developers) {
-        var developer = Util.getDeveloperWithUserId(this.developerParam, this.developers);
-        this.tasksService.getTasksForDev(developer.id).subscribe(tasks => this.displayTasks(tasks));
+    // All tasks takes preecedence
+    if (this.taskParam && this.taskParam == "All") {  //No dev selected
+      this.tasksService.loadTasks().subscribe(tasks => this.displayTasks(tasks));
+    } else if (this.projectParam) {
+      this.taskFilter = "";
+      var filteredProjects = this.projects.filter(item => item.name == this.projectParam);
+      if (filteredProjects && filteredProjects.length > 0) {
+        this.tasksService.getTasksForProjectId(filteredProjects[0].id).subscribe(tasks => this.displayTasks(tasks));
       } else {
-        this.developersService.getDeveloperWithUserId(this.developerParam).subscribe(developers => {
-          if (developers && developers.length > 0) {
-            this.tasksService.getTasksForDev(developers[0].id).subscribe(tasks => this.displayTasks(tasks));
-          }
-        });
+        this.msgsComponent.showError("Invalid project code " + this.projectParam);
+      }         //IF a developer is selected load task only for that dev   
+    } else if (this.developerParam) {
+      if (this.taskStatusParam) {
+        var developer = Util.getDeveloperWithUserId(this.developerParam, this.developers);
+        if (developer) {
+          this.tasksService.getTasksWithStatus(developer.id, this.taskStatusParam).subscribe(tasks => this.displayTasks(tasks));
+        }
+      } else {
+        // If dev is selected and the task filter is set to ALL then display everything
+        if (this.developers) {
+          var developer = Util.getDeveloperWithUserId(this.developerParam, this.developers);
+          this.tasksService.getTasksForDev(developer.id).subscribe(tasks => this.displayTasks(tasks));
+        } else {  // developers is not refreshed to call service and get dev data
+          this.developersService.getDeveloperWithUserId(this.developerParam).subscribe(developers => {
+            if (developers && developers.length > 0) {
+              this.tasksService.getTasksForDev(developers[0].id).subscribe(tasks => this.displayTasks(tasks));
+            }
+          });
+        }
       }
-    } else {  // BY deault we load all tasks for all devs
+    } else {
       this.tasksService.loadTasks().subscribe(tasks => this.displayTasks(tasks));
     }
   }
 
 
   displayTasks(tasks: Task[]) {
+    if (!tasks) {
+      return;
+    }
     console.log("Retrieved Tasks ===>" + tasks);
     tasks.sort((a, b) => {
       if (a.name < b.name) return -1;
@@ -153,6 +168,9 @@ export class TasksComponent extends BaseComponent implements OnInit {
     this.buildUIProjectData();
     this.setSelectedTaskUIData()
     this.consumers.forEach(item => item.consume(Task, this.tasks));
+    if (this.dataTable && this.taskFilter) {
+      this.dataTable.filterGlobal(this.taskFilter, 'contains');
+    }
   }
   setSelectedTaskUIData() {
     if (this.taskParam) {
@@ -171,7 +189,12 @@ export class TasksComponent extends BaseComponent implements OnInit {
 
   refreshTasks() {
     this.tasks = [];
-    this.loadTasks();
+    // we need to get dev before tasks as need to filter tasks for dev
+    this.developersService.getActiveDevelopers().subscribe(data => {
+      this.developers = data;
+      this.loadTasks();
+      this.buildUIDevData();
+    });
     this.msgsComponent.showInfo('Task list refreshed');
     if (this.tasks.length > 0) {
       this.selectedTaskUIData = this.tasksUIData[0];

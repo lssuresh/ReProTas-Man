@@ -1,61 +1,78 @@
-<app-task-dialog #taskAddDialog [visible]="tasksComponent.displayDialog"
-  (displayChange)="tasksComponent.hideDialog($event)" (openDialog)="initDialog($event)"
-  (dataChangeEvent)='dialogDataChanged($event)'>
-</app-task-dialog>
-<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
-<p-contextMenu [model]="menuItems" styleclass="menu-align" #tablecontextmenu></p-contextMenu>
-<p-table #dt [columns]="columnsToDisplay" [value]="teamDevWeekTasks" [paginator]="true" [rows]="100"
-  [resizableColumns]="true" *ngIf="teamDevWeekTasks" [contextMenu]="tablecontextmenu" selectionMode="single">
-  <ng-template pTemplate="caption">
-    <div #tddev style="text-align: left">
-      <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
-      <input pInputText type="text" (input)="dt.filter($event.target.value, 'devName', 'contains')"
-        placeholder="Developer Filter" style="width:auto">
-      Past <input pInputText type="text" [(ngModel)]="weekStartRange" size="1">,
-      Future <input pInputText type="text" [(ngModel)]="weekEndRange" size="1"> Week(s).
-      <button pButton type="button" class="ui-button-raised ui-button-rounded" icon="pi pi-refresh"
-        (click)="refreshViewData()" style="align-self: right"></button>
-    </div>
+<div style="text-align:left">
+  <app-task-dialog #taskAddDialog [visible]="tasksComponent.displayDialog"
+    (displayChange)="tasksComponent.hideDialog($event)" (openDialog)="initDialog($event)"
+    (dataChangeEvent)='dialogDataChanged($event)'>
+  </app-task-dialog>
+  <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+  <p-contextMenu [model]="menuItems" styleclass="menu-align" #tablecontextmenu></p-contextMenu>
+  <p-table #dt [columns]="columnsToDisplay" [value]="teamDevWeekTasks" [paginator]="true" [rows]="100"
+    [resizableColumns]="true" *ngIf="teamDevWeekTasks" [contextMenu]="tablecontextmenu" selectionMode="single">
+    <ng-template pTemplate="caption">
+      <div #tddev style="text-align: left">
+        <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+        <input pInputText type="text" (input)="dt.filter($event.target.value, 'devName', 'contains')"
+          placeholder="Developer Filter" style="width:auto">
+        Past <input pInputText type="text" [(ngModel)]="weekStartRange" size="1">,
+        Future <input pInputText type="text" [(ngModel)]="weekEndRange" size="1"> Week(s).
+        <button pButton type="button" class="ui-button-raised ui-button-rounded" icon="pi pi-refresh"
+          (click)="refreshViewData()" style="align-self: right"></button>
+      </div>
 
-  </ng-template>
-  <ng-template pTemplate="header" let-columns>
-    <tr #tr>
-      <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
-        <span *ngIf='col.field == currentWeek' style="color:darkred; ">
-          {{col.header}}
-        </span>
-        <span *ngIf='col.field != currentWeek'>
-          {{col.header}}
-        </span>
-        <p-sortIcon [field]="col.field" *ngIf='col.header=="Developer"'></p-sortIcon>
-      </th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-    <tr *ngFor="let row of rowData.maxTaskArrayPlaceHolder; let taskIndex=index">
-      <td *ngIf="taskIndex==0" [attr.rowspan]="rowData.maxTasks">
-        {{rowData.devName}}
-      </td>
-      <td pEditableColumn *ngFor="let col of weeks" [pContextMenuRow]="rowData.devName"
-        (mouseup)="onRowSelect($event, rowData.devName, col, taskIndex)">
-        <p-cellEditor>
-          <ng-template pTemplate="input" *ngIf='user'>
-            <input pInputText type="text" [(ngModel)]="newTask"
-              (focusin)="editTaskInline(rowData.devName, col, taskIndex)"
-              (keydown.enter)="saveTask(rowData.devName, col, taskIndex)">
-          </ng-template>
-          <ng-template pTemplate="output">
-            <p *ngIf="isTaskCompleted(rowData.weekTask.get(col), taskIndex); else non_completed_task"
-              style="color:rgb(51, 167, 13)">
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+      <tr #tr>
+        <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn>
+          <span *ngIf='col.field == currentWeek' style="color:darkred; ">
+            {{col.header}}
+          </span>
+          <span *ngIf='col.field != currentWeek'>
+            {{col.header}}
+          </span>
+          <p-sortIcon [field]="col.field" *ngIf='col.header=="Developer"'></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+      <tr *ngFor="let row of rowData.maxTaskArrayPlaceHolder; let taskIndex=index">
+        <td *ngIf="taskIndex==0" [attr.rowspan]="rowData.maxTasks">
+          {{rowData.devName}}
+        </td>
+        <td pEditableColumn *ngFor="let col of weeks" [pContextMenuRow]="rowData.devName"
+          (mouseup)="onRowSelect($event, rowData.devName, col, taskIndex)">
+          <p-cellEditor>
+            <ng-template pTemplate="input" *ngIf='user'>
+              <input pInputText type="text" [(ngModel)]="newTask"
+                (focusin)="editTaskInline(rowData.devName, col, taskIndex)"
+                (keydown.enter)="saveTask(rowData.devName, col, taskIndex)">
+            </ng-template>
+            <ng-template pTemplate="output">
+              <ng-container *ngIf="isTaskCompleted(rowData.weekTask.get(col), taskIndex); else non_completed_task">
+                <p style="color:rgb(51, 167, 13)">
+                  {{getData(rowData.weekTask.get(col), taskIndex)}}
+                </p>
+              </ng-container>
+            </ng-template>
+            <ng-template #non_completed_task>
+              <ng-container *ngIf="isOutTask(rowData.weekTask.get(col), taskIndex); else support_task">
+                <p style="color:red; font-weight:bold ">
+                  {{getDataFormattedForGeneralTask(rowData.weekTask.get(col), taskIndex)}}
+                </p>
+              </ng-container>
+            </ng-template>
+            <ng-template #support_task>
+              <ng-container *ngIf="isSupportTask(rowData.weekTask.get(col), taskIndex); else open_task">
+                <p style="color:orangered; font-weight:bold ">
+                  {{getDataFormattedForGeneralTask(rowData.weekTask.get(col), taskIndex)}}
+                </p>
+              </ng-container>
+            </ng-template>
+            <ng-template #open_task>
               {{getData(rowData.weekTask.get(col), taskIndex)}}
-            </p>
-          </ng-template>
-          <ng-template #non_completed_task>
-            {{getData(rowData.weekTask.get(col), taskIndex)}}
-          </ng-template>
-        </p-cellEditor>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
-<div *ngIf="selectedTaskId" style="text-align:left">{{selectedTaskId}}</div>
+            </ng-template>
+          </p-cellEditor>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <div *ngIf="selectedTaskId" style="text-align:left">{{selectedTaskId}}</div>
+</div>

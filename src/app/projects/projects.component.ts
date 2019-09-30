@@ -60,18 +60,18 @@ export class ProjectsComponent extends BaseComponent implements OnInit {
   constructor(private route: ActivatedRoute, private pfb: FormBuilder, private projectService: ProjectsService,
     private msgsComponent: MsgsComponent, private commonDataComponent: CommonDataComponent) {
     super();
+
+  }
+
+  ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.statusParam = params['status'];
       this.projectParam = params['project'];
       this.releaseParam = params['releaseNode'];
+      this.refreshProjects();
+      this.newProjectForm();
+      this.commonDataComponent.refreshCommonData();
     });
-  }
-
-  ngOnInit() {
-    this.refreshProjects();
-    this.newProjectForm();
-    this.commonDataComponent.refreshCommonData();
-
     this.menuItems = [
       { label: 'New ', icon: 'pi pi-plus', command: (event) => this.showAddDialog() },
       { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editProject() },
