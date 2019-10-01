@@ -18,6 +18,9 @@ export class Util {
     static isTaskCompleted(task: Task) {
         return task.status == "Completed" || task.status == "Closed";
     }
+    static setTaskCompleted(task: Task) {
+        task.status = "Completed";
+    }
 
     static isDate(val): boolean {
         return val instanceof Date;

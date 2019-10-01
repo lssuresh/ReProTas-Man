@@ -19,6 +19,7 @@ import { DevHelper } from '../developers/DevHelper';
 import { BaseComponent } from '../base-component';
 import { Util } from '../Util';
 import { Table } from 'primeng/components/table/table';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-tasks',
@@ -40,6 +41,8 @@ export class TasksComponent extends BaseComponent implements OnInit {
   developers: Developer[];
 
   consumers = [];
+
+  menuItems: MenuItem[];
 
   taskParamSubject;
   taskParam: string;
@@ -100,8 +103,21 @@ export class TasksComponent extends BaseComponent implements OnInit {
       this.refreshTasks();
       this.commonDataComponent.refreshCommonData();
       this.reset(null);
+      this.buildMenu();
 
     });
+  }
+
+  buildMenu() {
+    if (this.user) {
+      this.menuItems = [
+        { label: 'New ', icon: 'pi pi-plus', command: (event) => this.showAddDialog() },
+        { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask() },
+        { label: 'Delete', icon: 'pi pi-times', command: (event) => this.deleteTask() }
+      ];
+    } else {
+      this.menuItems = [];
+    }
   }
 
   ngOnInit() {
@@ -311,7 +327,7 @@ export class TasksComponent extends BaseComponent implements OnInit {
     console.log(event);
   }
 
-  delete() {
+  deleteTask() {
     this.tasksService.deleteTask(this.selectedTaskUIData.task).subscribe(
       data => {
         console.log("Deleted Successfully!");
@@ -337,5 +353,12 @@ export class TasksComponent extends BaseComponent implements OnInit {
       }
     }
     this.refreshWithTimer();
+  }
+
+  onRowSelect(event, id: string) {
+    var filteredItems = this.tasksUIData.filter(item => item.task.id == id);
+    if (filteredItems && filteredItems.length > 0) {
+      this.selectedTaskUIData = filteredItems[0];
+    }
   }
 }

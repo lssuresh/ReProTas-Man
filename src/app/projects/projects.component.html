@@ -1,7 +1,7 @@
 <p-contextMenu [model]="menuItems" #tablecontextmenu></p-contextMenu>
 <p-table #dt [columns]="columnsToDisplay" [value]="projects" selectionMode="single" [(selection)]="selectedProject"
     [paginator]="true" [rows]="15" [resizableColumns]="true" [contextMenu]="tablecontextmenu"
-    [(contextMenuSelection)]="selectedProject">
+    [(contextMenuSelection)]="selectedProject" contextMenuSelectionMode="joint">
     <ng-template pTemplate="caption" style="overflow:hidden">
         Projects
         <button pButton type="button" class="clear-button" label="Clear Filters" style="position: absolute; right: 0;"

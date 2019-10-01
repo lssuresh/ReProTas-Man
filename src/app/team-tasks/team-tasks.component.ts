@@ -61,9 +61,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     private msgsComponent: MsgsComponent, private tasksComponent: TasksComponent,
     private confirmationService: ConfirmationService, private developerService: DevelopersService) {
     super();
-    //this.developerComponent.addConsumer(this);
     this.resetSessionData();
-    //this.tasksComponent.refreshTasks();
     this.refreshViewData();
     this.buildMenu();
   }
@@ -73,13 +71,18 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
   }
 
   buildMenu() {
-    this.menuItems = [
-      { label: 'New ', icon: 'pi pi-plus', command: (event) => this.showAddDialog() },
-      { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.tasksComponent.displayDialog = true },
-      { label: 'Out', icon: 'pi pi-ban', command: (event) => this.addGeneralTask(this.TASK_OUT_LABEL) },
-      { label: 'Support', icon: 'pi pi-clock', command: (event) => this.addGeneralTask(this.TASK_SUPPORT_LABEL) },
-      { label: 'Delete', icon: 'pi pi-times', command: (event) => this.deleteTask() }
-    ];
+    if (this.user) {
+      this.menuItems = [
+        { label: 'New ', icon: 'pi pi-plus', command: (event) => this.showAddDialog() },
+        { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.tasksComponent.displayDialog = true },
+        { label: 'Completed', icon: 'pi pi-star', command: (event) => this.setTaskCompleted() },
+        { label: 'Out', icon: 'pi pi-ban', command: (event) => this.addGeneralTask(this.TASK_OUT_LABEL) },
+        { label: 'Support', icon: 'pi pi-clock', command: (event) => this.addGeneralTask(this.TASK_SUPPORT_LABEL) },
+        { label: 'Delete', icon: 'pi pi-times', command: (event) => this.deleteTask() }
+      ];
+    } else {
+      this.menuItems = [];
+    }
   }
 
 
@@ -413,6 +416,14 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     this.refreshWithTimer();
   }
 
+  setTaskCompleted(): void {
+    if (this.selectedTask) {
+      Util.setTaskCompleted(this.selectedTask);
+      this.tasksService.addOrUpdate(this.selectedTask).subscribe(item => {
+        this.msgsComponent.showInfo('Task update/added' + item.name);
+      });
+    }
+  }
   showAddDialog(): void {
     var taskUIData = new TaskUIData();
     this.tasksComponent.selectedTaskUIData = taskUIData;

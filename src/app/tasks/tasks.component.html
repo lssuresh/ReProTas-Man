@@ -1,6 +1,9 @@
+<div style="text-align:left">
+  <p-contextMenu [model]="menuItems" styleclass="menu-align" #tablecontextmenu></p-contextMenu>
+</div>
 <p-table #dt [columns]="columnsToDisplay" [value]="tasksUIData" selectionMode="single"
   [(selection)]="selectedTaskUIData" [paginator]="true" [rows]="15" [resizableColumns]="true"
-  *ngIf="developers && projects">
+  [contextMenu]="tablecontextmenu" *ngIf="developers && projects" contextMenuSelectionMode="joint">
   <ng-template pTemplate="caption">
     <div style="text-align: right">
       <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
@@ -21,7 +24,7 @@
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-rowData>
-    <tr [pSelectableRow]="rowData">
+    <tr [pSelectableRow]="rowData" [pContextMenuRow]="rowData">
       <td>
         {{rowData.developerName}}
       </td>
@@ -62,7 +65,7 @@
     <div style="text-align:left" *ngIf='user'>
       <button type="button" pButton icon="pi pi-plus" (click)="showAddDialog()" label="Add New"></button>
       <button type="button" pButton icon="pi pi-pencil" (click)="editTask()" label="Edit"></button>
-      <button type="button" pButton icon="pi pi-times" class="ui-button-danger" (click)="delete()"
+      <button type="button" pButton icon="pi pi-times" class="ui-button-danger" (click)="deleteTask()"
         label="Delete"></button>
     </div>
     <a [routerLink]="['/tasks']">My Task</a>|
