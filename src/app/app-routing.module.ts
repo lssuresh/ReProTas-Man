@@ -20,7 +20,7 @@ const routes: Routes = [
   { path: 'releases', component: ReleaseComponent },
   { path: 'team-calendar', component: TaskCalendarComponent, },
   { path: 'my-calendar', component: TaskCalendarComponent, },
-  { path: '**', redirectTo: 'my-calendar' }
+  { path: '**', redirectTo: 'team-calendar' }
 ];
 
 @NgModule({
