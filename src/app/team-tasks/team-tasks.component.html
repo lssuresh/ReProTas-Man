@@ -35,7 +35,7 @@
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
     <tr *ngFor="let row of rowData.maxTaskArrayPlaceHolder; let taskIndex=index">
-      <td *ngIf="taskIndex==0" [attr.rowspan]="rowData.maxTasks">
+      <td *ngIf="taskIndex==0" [attr.rowspan]="rowData.maxTaskArrayPlaceHolder.length">
         {{rowData.devName}}
       </td>
       <td pEditableColumn *ngFor="let col of weeks" [pContextMenuRow]="rowData.devName"
