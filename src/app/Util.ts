@@ -21,6 +21,9 @@ export class Util {
     static setTaskCompleted(task: Task) {
         task.status = "Completed";
     }
+    static setTaskArchived(task: Task) {
+        task.status = "Archived";
+    }
 
     static isDate(val): boolean {
         return val instanceof Date;

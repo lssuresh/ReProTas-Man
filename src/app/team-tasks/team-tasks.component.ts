@@ -76,6 +76,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
         { label: 'New ', icon: 'pi pi-plus', command: (event) => this.showAddDialog() },
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.tasksComponent.displayDialog = true },
         { label: 'Completed', icon: 'pi pi-star', command: (event) => this.setTaskCompleted() },
+        { label: 'Cmpltd & Arch', icon: 'pi pi-star', command: (event) => this.setTaskCompleteAndArchive() },
         { label: 'Out', icon: 'pi pi-ban', command: (event) => this.addGeneralTask(this.TASK_OUT_LABEL) },
         { label: 'Support', icon: 'pi pi-clock', command: (event) => this.addGeneralTask(this.TASK_SUPPORT_LABEL) },
         { label: 'Delete', icon: 'pi pi-times', command: (event) => this.deleteTask() }
@@ -269,9 +270,16 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
 
     return this.GEN_TASK_LABEL;
   }
+
+  getFormattedDate(date: Date) {
+    if (date) {
+      return " - " + moment(date).format('MM/DD');
+    }
+    return "";
+  }
   getData(tasks: Task[], index: number) {
     if (tasks && tasks.length > index) {
-      return tasks[index].name;
+      return tasks[index].name + this.getFormattedDate(tasks[index].end_date);
     }
     return " ";
   }
@@ -414,6 +422,14 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
       this.tasks.push(event);
     }
     this.refreshWithTimer();
+  }
+  setTaskCompleteAndArchive(): void {
+    if (this.selectedTask) {
+      Util.setTaskArchived(this.selectedTask);
+      this.tasksService.addOrUpdate(this.selectedTask).subscribe(item => {
+        this.msgsComponent.showInfo('Task update/added' + item.name);
+      });
+    }
   }
 
   setTaskCompleted(): void {
