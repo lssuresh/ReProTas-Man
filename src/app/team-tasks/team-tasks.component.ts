@@ -76,7 +76,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
         { label: 'New ', icon: 'pi pi-plus', command: (event) => this.showAddDialog() },
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.tasksComponent.displayDialog = true },
         { label: 'Completed', icon: 'pi pi-star', command: (event) => this.setTaskCompleted() },
-        { label: 'Cmpltd & Arch', icon: 'pi pi-star', command: (event) => this.setTaskCompleteAndArchive() },
+        { label: 'Complt & Arch', icon: 'pi pi-check', command: (event) => this.setTaskCompleteAndArchive() },
         { label: 'Out', icon: 'pi pi-ban', command: (event) => this.addGeneralTask(this.TASK_OUT_LABEL) },
         { label: 'Support', icon: 'pi pi-clock', command: (event) => this.addGeneralTask(this.TASK_SUPPORT_LABEL) },
         { label: 'Delete', icon: 'pi pi-times', command: (event) => this.deleteTask() }
