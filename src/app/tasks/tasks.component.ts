@@ -322,6 +322,7 @@ export class TasksComponent extends BaseComponent implements OnInit {
 
   hideDialog(event) {
     this.displayDialog = event;
+    this.refreshTasks();
   }
   initDialog(event) {
     console.log(event);

@@ -1,6 +1,6 @@
 <app-task-dialog #taskAddDialog [visible]="tasksComponent.displayDialog"
-  (displayChange)="tasksComponent.hideDialog($event)" (openDialog)="initDialog($event)"
-  (dataChangeEvent)='dialogDataChanged($event)'>
+  (displayChange)="tasksComponent.hideDialog($event);" (displayChange)="refreshViewData();"
+  (openDialog)="initDialog($event)" (dataChangeEvent)='dialogDataChanged($event)'>
 </app-task-dialog>
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 <div style="text-align:left">

@@ -2,7 +2,7 @@
   [style]="{width:'500px', height: '500px', 'overflow':'scroll'}" [resizable]="true" [responsive]="true"
   [contentStyle]="{'overflow':'visible'}" (onHide)="onClose()" (onShow)="onOpen()">
   <p-messages [(value)]="errorMsgs"></p-messages>
-  <form (ngSubmit)="save()">
+  <form>
     <div class="ui-g ui-fluid" *ngIf="selectedTaskUIData">
       <div class="ui-g-12">
         <div class="ui-g-4">
@@ -130,7 +130,7 @@
     </div>
     <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
-        <button type="submit" pButton icon="pi pi-check" label="Save" *ngIf='user'></button>
+        <button type="button" pButton icon="pi pi-check" label="Save" *ngIf='user' (click)='save()'></button>
         <button type="cancel" pButton icon="pi pi-times" label="cancel" (click)='hideDialog()'></button>
       </div>
     </p-footer>
