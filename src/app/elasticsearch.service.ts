@@ -16,7 +16,7 @@ export class ElasticsearchService {
 
   private client: Client;
 
-  DEFAULT_SIZE = 100;
+  DEFAULT_SIZE = 500;
 
   httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
