@@ -250,7 +250,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
     }
   }
   getWeekLabel(weekNum: string) {
-    return "Week" + weekNum;
+    return weekNum.length == 1 ? "Week0" + weekNum : "Week" + weekNum;
   }
 
   getStartAndEndDate(task: Task) {
