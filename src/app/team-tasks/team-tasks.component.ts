@@ -191,7 +191,7 @@ export class TeamTasksComponent extends BaseComponent implements OnInit {
       // we add ot the week label only if its within our range
       // else we show in common label as OPEN
       if (taskItem.start_date && moment(taskItem.start_date).isAfter(rangeStart) && moment(taskItem.start_date).isBefore(rangeEnd)) {
-        var weekNum = moment(taskItem.start_date).format('W');
+        var weekNum = ""+moment(taskItem.start_date).week();
         weekLbl = this.getWeekLabel(weekNum);
         this.weekDates.set(weekLbl, {
           [this.startDateKey]: moment().day(this.weekStart).week(+weekNum).toDate(),
