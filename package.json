@@ -27,7 +27,7 @@
     "@fullcalendar/interaction": "^4.2.0",
     "angular-web-storage": "^7.0.0-beta.1",
     "core-js": "^2.5.4",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "npm": "^6.9.0",
     "primeicons": "^1.0.0",
     "primeng": "^7.1.1",
